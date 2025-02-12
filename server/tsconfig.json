@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    // "module": "commonjs",
+    // "target": "es6",
+    "strict": true, // Optional, enables strict type-checking
+    "skipLibCheck": true // Optional, skips type checking of declaration files for faster compilation
+    // "forceConsistentCasingInFileNames": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
