@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { verifyToken } from "../middleware/auth";
 import { OAuth2Client } from "google-auth-library";
+import validator from "validator";
 
 import dotenv from "dotenv";
 
@@ -60,15 +61,22 @@ interface AuthRequest extends Request {
 router.post("/register", async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, password } = req.body;
-
+    if (!validator.isEmail(email)) {
+      res.status(400).json({ message: "Invalid email address" });
+      return;
+    }
+    if (!validator.isLength(password, { min: 6 })) {
+      res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters long" });
+      return;
+    }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: "Email already in use" });
       return;
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -84,6 +92,10 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
 router.post("/login", async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+    if (!validator.isEmail(email)) {
+      res.status(400).json({ message: "Invalid email address" });
+      return;
+    }
     const user = await User.findOne({ email });
     if (!user) {
       res.status(400).json({ error: "Invalid credentials" });
@@ -162,21 +174,21 @@ router.post(
   "/forgot-password",
   async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
+    if (!validator.isEmail(email)) {
+      res.status(400).json({ message: "Invalid email address" });
+      return;
+    }
     try {
       const user = await User.findOne({ email });
-
       if (!user) {
         res.status(404).json({ message: "User not found" });
         return; // Ensure function exits
       }
-
       // Generate a reset token
       const resetToken = crypto.randomBytes(32).toString("hex");
       user.resetToken = resetToken;
       user.resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour expiry
-
       await user.save();
-
       // Send email with the reset link
       const resetLink = `${process.env.FRONTEND_URL}/resetPassword/${resetToken}`;
       await sendEmail(
@@ -200,6 +212,13 @@ router.post(
       const { token } = req.params;
       const { newPassword } = req.body;
 
+      if (!validator.isLength(newPassword, { min: 6 })) {
+        res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+        return;
+      }
+
       const user = await User.findOne({
         resetToken: token,
         resetTokenExpiry: { $gt: Date.now() }, // Ensure token is valid
@@ -220,6 +239,30 @@ router.post(
       await user.save();
 
       res.json({ message: "Password reset successful" });
+    } catch (err) {
+      if (err instanceof Error)
+        res.status(500).json({ message: `Server error ${err.message}` });
+    }
+  }
+);
+
+router.post(
+  "/deleteUser",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email } = req.body;
+      // Validate input
+      if (!validator.isEmail(email)) {
+        res.status(400).json({ message: "Invalid email address" });
+        return;
+      }
+      const user = await User.findOne({ email });
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return; // Ensure function exits
+      }
+      await user.deleteOne();
+      res.json({ message: "User deleted successfully" });
     } catch (err) {
       if (err instanceof Error)
         res.status(500).json({ message: `Server error ${err.message}` });

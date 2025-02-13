@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { forgotPassword } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,12 @@ const ForgotPasswordPage = () => {
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Send Reset Link
+          </button>
+          <button
+            onClick={() => navigate("/login")}
+            className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Back to login
           </button>
         </form>
         {message && <p className="text-center mt-4">{message}</p>}

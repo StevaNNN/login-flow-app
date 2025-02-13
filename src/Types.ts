@@ -4,6 +4,6 @@ export interface USER {
   password?: string;
   createdAt?: string;
   updatedAt?: string;
-  _id?: string;
-  _v?: number;
+  _id: string;
+  _v: number;
 }

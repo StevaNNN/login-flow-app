@@ -6,18 +6,22 @@ import { AuthContext } from "./AuthContext";
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<USER | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     try {
       const fetchUser = async () => {
+        setLoading(true);
         const { data } = await getUser();
         setUser(data);
         setLoggedIn(true);
       };
       fetchUser();
     } catch (err) {
-      console.log(err, "STEVAA");
+      if (err instanceof Error) console.log(err.message);
       setLoggedIn(false);
+    } finally {
+      setLoading(true);
     }
   }, [loggedIn]);
 
@@ -35,7 +39,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loggedIn }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, loggedIn, loading, setLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -2,9 +2,10 @@ import { useState, useContext } from "react";
 import { loginUser } from "../api";
 import { AuthContext } from "../context/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { USER } from "../Types";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<USER["email"]>("");
   const [password, setPassword] = useState("");
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
