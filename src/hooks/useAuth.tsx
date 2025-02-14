@@ -1,6 +1,9 @@
+import { useContext } from "react";
+import { AuthContext } from "../context/auth/AuthContext";
+
 const useAuth = (): boolean => {
-  const loggedIn = localStorage.getItem("loggedIn");
-  return loggedIn ? true : false;
+  const authCtx = useContext(AuthContext);
+  return authCtx?.loggedIn ? true : false;
 };
 
 export default useAuth;

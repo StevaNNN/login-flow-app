@@ -21,11 +21,6 @@ const UsersPage = () => {
     fetchUsers();
   }, []);
 
-  const handleLogout = async () => {
-    authContext?.logout();
-    navigate("/login");
-  };
-
   const handleUserDelete = async (user: USER) => {
     const userEmail = users.find((item) => item._id === user._id)?.email;
     setUsers((prevState) => {
@@ -40,14 +35,14 @@ const UsersPage = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
-        <h1 className="text-3xl font-bold underline mb-4 text-emerald-200">
-          Users page!
+      <div className="flex flex-col items-center justify-center bg-gray-900 p-4">
+        <h1 className="text-3xl font-bold underline mb-4 text-emerald-300">
+          User page!
         </h1>
-        <h1 className="text-xl mb-4 text-emerald-200">
+        <h1 className="text-xl mb-4 text-emerald-300">
           Active user is: {authContext?.user?.email}
         </h1>
-        <h2 className="text-xl mb-4 text-emerald-200">
+        <h2 className="text-xl mb-4 text-emerald-300">
           User role is: {authContext?.user?.userType}
         </h2>
         {authContext?.user?.userType === "admin" && (
@@ -73,19 +68,6 @@ const UsersPage = () => {
             </ul>
           </div>
         )}
-
-        <button
-          className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-        <button
-          className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"
-          onClick={() => navigate("/info")}
-        >
-          Go to Info page
-        </button>
       </div>
       <Outlet />
     </>

@@ -7,11 +7,13 @@ import LoginPage from "./feature/login/LoginPage";
 import RegisterPage from "./feature/login/RegisterPage";
 import ResetPasswordPage from "./feature/login/ResetPassPage";
 import UserPage from "./pages/UserPage";
+import Layout from "./components/Layout";
 
 export const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+    index: true,
   },
   {
     path: "/register",
@@ -26,20 +28,22 @@ export const router = createBrowserRouter([
     element: <ResetPasswordPage />,
   },
   {
-    path: "/user",
+    path: "/",
     element: (
       <ProtectedRoute>
-        <UserPage />
+        <Layout />
       </ProtectedRoute>
     ),
-  },
-  {
-    path: "/info",
-    element: (
-      <ProtectedRoute>
-        <InfoPage />{" "}
-      </ProtectedRoute>
-    ),
+    children: [
+      {
+        path: "/user",
+        element: <UserPage />,
+      },
+      {
+        path: "/info",
+        element: <InfoPage />,
+      },
+    ],
   },
   {
     path: "*",

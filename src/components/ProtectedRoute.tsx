@@ -1,15 +1,15 @@
-import { PropsWithChildren, useEffect } from "react";
+import { PropsWithChildren, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { AuthContext } from "../context/auth/AuthContext";
 
 type ProtectedRouteProps = PropsWithChildren;
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const isLoggedIn = useAuth();
+  const isLoggedIn = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isLoggedIn === false) {
+    if (isLoggedIn ? false : true) {
       navigate("/login", { replace: true });
     }
   }, [isLoggedIn, navigate]);
