@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
-import { loginUser } from "../api";
-import { AuthContext } from "../context/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { USER } from "../Types";
+import { USER } from "../../Types";
+import { AuthContext } from "../../context/auth/AuthContext";
+import { loginUser } from "../../api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<USER["email"]>("");
@@ -15,7 +15,7 @@ const LoginPage = () => {
     try {
       await loginUser({ email, password });
       authContext?.login({ email });
-      navigate("/users");
+      navigate("/user");
     } catch (err) {
       console.error(err);
     }

@@ -60,7 +60,7 @@ interface AuthRequest extends Request {
 // Register
 router.post("/register", async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, userType } = req.body;
     if (!validator.isEmail(email)) {
       res.status(400).json({ message: "Invalid email address" });
       return;
@@ -77,7 +77,12 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
       return;
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      userType,
+    });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {

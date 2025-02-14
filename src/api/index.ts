@@ -35,8 +35,10 @@ API.interceptors.response.use(
 );
 
 export const registerUser = (data: USER) => API.post("/register", data);
-export const loginUser = (data: { email: string; password: string }) =>
-  API.post("/login", data);
+export const loginUser = (data: {
+  email: USER["email"];
+  password: USER["password"];
+}) => API.post("/login", data);
 export const logoutUser = () => API.post("/logout");
 export const forgotPassword = (email: string) =>
   API.post("/forgot-password", { email });

@@ -1,38 +1,42 @@
-import { useState } from "react";
-import { registerUser } from "../api";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { USER } from "../../Types";
+import { registerUser } from "../../api";
+
+const users = ["user", "admin"];
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState<USER["username"]>("");
+  const [email, setEmail] = useState<USER["email"]>("");
+  const [password, setPassword] = useState<USER["password"]>("");
+  const [userType, setUserType] = useState<string>("user");
   const [notification, setNotification] = useState<string | null>(null);
   const [errors, setErrors] = useState<{
-    username?: string;
-    email?: string;
-    password?: string;
+    username?: string | null;
+    email?: string | null;
+    password?: string | null;
   }>({});
   const navigate = useNavigate();
 
-  const validateUsername = (username: string) => {
-    if (username.length < 3) {
+  const validateUsername = (username?: string) => {
+    if (username && username.length < 3) {
       return "Username must be at least 3 characters long.";
     }
     return null;
   };
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email?: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (email && !emailRegex.test(email)) {
       return "Invalid email address.";
     }
     return null;
   };
 
-  const validatePassword = (password: string) => {
+  const validatePassword = (password?: string) => {
     const passwordRegex =
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
-    if (!passwordRegex.test(password)) {
+    if (password && !passwordRegex.test(password)) {
       return "Password must be at least 6 characters long, include at least one uppercase letter, one number, and one special character.";
     }
     return null;
@@ -72,22 +76,27 @@ const Register = () => {
     }
 
     try {
-      const { data } = await registerUser({ username, email, password });
+      const { data } = await registerUser({
+        username,
+        email,
+        password,
+        userType,
+      });
       setNotification(data.message);
       setTimeout(() => {
         setNotification(null);
         navigate("/login");
       }, 3000); // Hide notification after 3 seconds and navigate to login
-    } catch (err: any) {
+    } catch (err) {
       const { status } = err.response;
       const { message } = err.response.data;
       if (status === 400) {
         setNotification(message);
-        setTimeout(() => setNotification(null), 3000); // Hide notification after 3 seconds
+        setTimeout(() => setNotification(null), 1500); // Hide notification after 3 seconds
         return;
       }
       setNotification(message);
-      setTimeout(() => setNotification(null), 3000); // Hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 1500); // Hide notification after 3 seconds
     }
   };
 
@@ -148,6 +157,28 @@ const Register = () => {
           {errors.email && (
             <p className="text-red-500 text-sm mt-2">{errors.email}</p>
           )}
+        </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="userType"
+          >
+            User Type
+          </label>
+          <select
+            id="userType"
+            value={userType}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setUserType(e.target.value)
+            }
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {users.map((user) => (
+              <option value={user} key={user}>
+                {user.charAt(0).toUpperCase() + user.slice(1)}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-6">
           <label

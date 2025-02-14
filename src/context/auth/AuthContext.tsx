@@ -7,8 +7,6 @@ interface AuthContextType {
   login: (data: { email: USER["email"] }) => void;
   logout: () => void;
   loggedIn: boolean;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);

@@ -21,7 +21,7 @@ const InfoPage = () => {
       <p className="mt-4 text-emerald-200">{data}</p>
       <button
         className="mt-4 bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-        onClick={() => navigate("/users")}
+        onClick={() => navigate("/user")}
       >
         Go back
       </button>

@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import UsersPage from "./pages/UsersPage";
 import InfoPage from "./pages/InfoPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import ForgotPasswordPage from "./pages/ForgotPassPage";
-import ResetPasswordPage from "./pages/ResetPassPage";
+import ForgotPasswordPage from "./feature/login/ForgotPassPage";
+import LoginPage from "./feature/login/LoginPage";
+import RegisterPage from "./feature/login/RegisterPage";
+import ResetPasswordPage from "./feature/login/ResetPassPage";
+import UserPage from "./pages/UserPage";
 
 export const router = createBrowserRouter([
   {
@@ -26,10 +26,10 @@ export const router = createBrowserRouter([
     element: <ResetPasswordPage />,
   },
   {
-    path: "/users",
+    path: "/user",
     element: (
       <ProtectedRoute>
-        <UsersPage />
+        <UserPage />
       </ProtectedRoute>
     ),
   },

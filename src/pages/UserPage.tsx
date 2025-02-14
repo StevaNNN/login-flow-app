@@ -47,27 +47,32 @@ const UsersPage = () => {
         <h1 className="text-xl mb-4 text-emerald-200">
           Active user is: {authContext?.user?.email}
         </h1>
-        <div className="w-full max-w-md bg-white rounded-lg shadow-md p-4">
-          <h2 className="text-xl font-bold mb-4">Users</h2>
-          <ul>
-            {users?.map((user) => {
-              return (
-                <li
-                  key={user._id}
-                  className="mb-4 border-b last:border-b-0 pb-2 flex items-center justify-between"
-                >
-                  {user.email}
-                  <button
-                    className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"
-                    onClick={() => handleUserDelete(user)}
+        <h2 className="text-xl mb-4 text-emerald-200">
+          User role is: {authContext?.user?.userType}
+        </h2>
+        {authContext?.user?.userType === "admin" && (
+          <div className="w-full max-w-md bg-white rounded-lg shadow-md p-4">
+            <h2 className="text-xl font-bold mb-4">Users</h2>
+            <ul>
+              {users?.map((user) => {
+                return (
+                  <li
+                    key={user._id}
+                    className="mb-4 border-b last:border-b-0 pb-2 flex items-center justify-between"
                   >
-                    Delete user
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                    {user.email}
+                    <button
+                      className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"
+                      onClick={() => handleUserDelete(user)}
+                    >
+                      Delete user
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
 
         <button
           className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"

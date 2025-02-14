@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { forgotPassword } from "../api";
+import { forgotPassword } from "../../api";
 import { useNavigate } from "react-router-dom";
 
 const ForgotPasswordPage = () => {
@@ -11,7 +11,6 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
     try {
       const res = await forgotPassword(email);
-      console.log(res.data.message, "steva");
       setMessage(res.data.message);
     } catch (err) {
       if (err instanceof Error)
