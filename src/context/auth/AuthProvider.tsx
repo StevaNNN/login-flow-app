@@ -25,17 +25,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [loggedIn]);
 
   const login = async () => {
+    setLoggedIn(true);
     try {
       const { data } = await getUser();
       setUser(data);
-      setLoggedIn(true);
       localStorage.setItem("loggedIn", JSON.stringify(true));
     } catch (err) {
       if (err instanceof Error) console.log(err.message);
     }
   };
-  console.log(user, "USER STATE");
-  console.log(loggedIn, "LOGGED IN STATE");
+
   const logout = () => {
     setLoggedIn(false);
     localStorage.removeItem("loggedIn");
