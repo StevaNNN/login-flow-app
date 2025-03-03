@@ -8,6 +8,7 @@ import RegisterPage from "./feature/login/RegisterPage";
 import ResetPasswordPage from "./feature/login/ResetPassPage";
 import UserPage from "./pages/UserPage";
 import Layout from "./components/Layout";
+import HomePage from "./pages/HomePage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,14 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      {
+        path: "/home",
+        element: (
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "/user",
         element: (

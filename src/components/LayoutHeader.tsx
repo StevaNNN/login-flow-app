@@ -10,7 +10,7 @@ const LayoutHeader: React.FC = () => {
         <ul className="flex space-x-4">
           <li>
             <NavLink
-              to="/"
+              to="/home"
               className="hover:text-emerald-300 transition-colors duration-200"
             >
               Home

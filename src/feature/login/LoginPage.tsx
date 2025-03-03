@@ -15,7 +15,7 @@ const LoginPage = () => {
     try {
       await loginUser({ email, password });
       authContext?.login({ email });
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       console.error(err);
     }
