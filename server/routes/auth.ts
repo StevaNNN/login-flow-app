@@ -60,7 +60,7 @@ interface AuthRequest extends Request {
 // Register
 router.post("/register", async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, email, password, userType } = req.body;
+    const { userName, fullName, email, password, role } = req.body;
     if (!validator.isEmail(email)) {
       res.status(400).json({ message: "Invalid email address" });
       return;
@@ -76,12 +76,18 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ message: "Email already in use" });
       return;
     }
+    const adminUser = await User.findOne({ role: "admin" });
+    if (role === "admin" && adminUser) {
+      res.status(400).json({ message: "An admin user already exists" });
+      return;
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
-      username,
+      fullName,
+      userName,
       email,
       password: hashedPassword,
-      userType,
+      role,
     });
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -153,15 +159,6 @@ router.get(
     }
   }
 );
-
-// New route to return a small amount of data
-router.get("/info", (_req: Request, res: Response) => {
-  const data = {
-    message: "This is a small amount of data",
-    timestamp: new Date().toISOString(),
-  };
-  res.json(data);
-});
 
 // Get all users
 router.get("/users", async (_req: Request, res: Response): Promise<void> => {

@@ -1,14 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
-import InfoPage from "./pages/InfoPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPasswordPage from "./feature/login/ForgotPassPage";
 import LoginPage from "./feature/login/LoginPage";
 import RegisterPage from "./feature/login/RegisterPage";
 import ResetPasswordPage from "./feature/login/ResetPassPage";
-import UserPage from "./pages/UserPage";
 import Layout from "./components/Layout";
-import HomePage from "./pages/HomePage";
+import AdminPage from "./pages/AdminPage";
+import PlayerPage from "./pages/PlayerPage";
 
 export const router = createBrowserRouter([
   {
@@ -36,26 +35,18 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/home",
+        path: "/admin",
         element: (
           <ProtectedRoute>
-            <HomePage />
+            <AdminPage />
           </ProtectedRoute>
         ),
       },
       {
-        path: "/user",
+        path: "/player",
         element: (
-          <ProtectedRoute>
-            <UserPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "/info",
-        element: (
-          <ProtectedRoute>
-            <InfoPage />
+          <ProtectedRoute role="player">
+            <PlayerPage />
           </ProtectedRoute>
         ),
       },

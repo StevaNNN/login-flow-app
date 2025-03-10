@@ -47,7 +47,6 @@ export const resetPassword = (token: string | undefined, newPassword: string) =>
 ////////////////////////////////////////////////////////////////////////////////////////
 export const getUser = () => API.get(`/me`, { withCredentials: true });
 export const getUsers = () => API.get(`/users`);
-export const getInfo = () => API.get(`/info`);
 export const deleteUser = (email: string) => API.post("/deleteUser", { email });
 
 export default API;

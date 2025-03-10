@@ -2,9 +2,14 @@ import { PropsWithChildren, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
-type ProtectedRouteProps = PropsWithChildren;
+type ProtectedRouteProps = PropsWithChildren & {
+  role?: "admin" | "player";
+};
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function ProtectedRoute({
+  children,
+  role,
+}: ProtectedRouteProps) {
   const navigate = useNavigate();
   const userLoggedIn = useAuth();
 
@@ -12,7 +17,13 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     if (!userLoggedIn) {
       navigate("/login", { replace: true });
     }
-  }, [navigate, userLoggedIn]);
+    if (role === "admin") {
+      navigate("/admin", { replace: true });
+    }
+    if (role === "player") {
+      navigate("/player", { replace: true });
+    }
+  }, [navigate, role, userLoggedIn]);
 
   return children;
 }

@@ -1,13 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import LayoutHeader from "./LayoutHeader";
-import LayoutFooter from "./LayoutFooter";
+import { AuthContext } from "../context/auth/AuthContext";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
+  const authCtx = useContext(AuthContext);
+  const { role } = authCtx?.user || {};
+
   useEffect(() => {
-    navigate("/home");
-  }, [navigate]);
+    if (role === "admin") navigate("/admin");
+    if (role === "player") navigate("/player");
+  }, [navigate, role]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-900">
@@ -15,7 +19,6 @@ const Layout: React.FC = () => {
       <main className="flex-grow p-4 mt-16 mb-16">
         <Outlet />
       </main>
-      <LayoutFooter />
     </div>
   );
 };

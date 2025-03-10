@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { deleteUser, getUsers } from "../api";
 import { USER } from "../Types";
 
-const UsersPage = () => {
+const AdminPage = () => {
   const authContext = useContext(AuthContext);
   const [users, setUsers] = useState<USER[]>([]);
   const navigate = useNavigate();
@@ -43,9 +43,9 @@ const UsersPage = () => {
           Active user is: {authContext?.user?.email}
         </h1>
         <h2 className="text-xl mb-4 text-emerald-300">
-          User role is: {authContext?.user?.userType}
+          User role is: {authContext?.user?.role}
         </h2>
-        {authContext?.user?.userType === "admin" && (
+        {authContext?.user?.role === "admin" && (
           <div className="w-full max-w-md bg-white rounded-lg shadow-md p-4">
             <h2 className="text-xl font-bold mb-4">Users</h2>
             <ul>
@@ -56,12 +56,14 @@ const UsersPage = () => {
                     className="mb-4 border-b last:border-b-0 pb-2 flex items-center justify-between"
                   >
                     {user.email}
-                    <button
-                      className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"
-                      onClick={() => handleUserDelete(user)}
-                    >
-                      Delete user
-                    </button>
+                    {user.role !== "admin" && (
+                      <button
+                        className="bg-cyan-500 text-white py-2 px-4 rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 mt-4"
+                        onClick={() => handleUserDelete(user)}
+                      >
+                        Delete user
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -74,4 +76,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default AdminPage;

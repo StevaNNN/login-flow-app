@@ -1,47 +1,31 @@
 import React, { useContext } from "react";
-import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/auth/AuthContext";
+import { NavLink } from "react-router-dom";
+
 const LayoutHeader: React.FC = () => {
   const authContext = useContext(AuthContext);
+
+  const handleAddNewScore = () => {
+    console.log("Add logic for adding new score");
+  };
   return (
     <header className="bg-gray-600 text-emerald-300 p-4 fixed top-0 left-0 w-full z-10">
       <nav className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl font-bold">My App</div>
-        <ul className="flex space-x-4">
-          <li>
-            <NavLink
-              to="/home"
-              className="hover:text-emerald-300 transition-colors duration-200"
-            >
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/user"
-              className="hover:text-emerald-300 transition-colors duration-200"
-            >
-              User
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/info"
-              className="hover:text-emerald-300 transition-colors duration-200"
-            >
-              Info
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/login"
-              onClick={() => authContext?.logout()}
-              className="hover:text-emerald-300 transition-colors duration-200"
-            >
-              Logout
-            </NavLink>
-          </li>
-        </ul>
+        <div className="text-2xl font-bold">Tennis Kragujevac</div>
+        <button
+          onClick={handleAddNewScore}
+          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Add new score
+        </button>
+        <p>{authContext?.user?.fullName}</p>
+        <NavLink
+          onClick={() => authContext?.logout()}
+          to="/login"
+          className="text-emerald-300 hover:text-emerald-200"
+        >
+          Logout
+        </NavLink>
       </nav>
     </header>
   );
