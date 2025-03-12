@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (loggedIn) fetchUser();
     } catch (err) {
       if (err instanceof Error) console.log(err.message);
+      localStorage.removeItem("loggedIn");
       setLoggedIn(false);
     }
   }, [loggedIn]);

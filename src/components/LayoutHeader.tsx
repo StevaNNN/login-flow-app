@@ -1,33 +1,45 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../context/auth/AuthContext";
-import { NavLink } from "react-router-dom";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
+import { Box, Container, Typography } from "@mui/material";
 
 const LayoutHeader: React.FC = () => {
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleAddNewScore = () => {
     console.log("Add logic for adding new score");
   };
+  const handleLogout = () => {
+    authContext?.logout();
+    navigate("/login");
+  };
+
   return (
-    <header className="bg-gray-600 text-emerald-300 p-4 fixed top-0 left-0 w-full z-10">
-      <nav className="container mx-auto flex justify-between items-center">
-        <div className="text-2xl font-bold">Tennis Kragujevac</div>
-        <button
-          onClick={handleAddNewScore}
-          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Add new score
-        </button>
-        <p>{authContext?.user?.fullName}</p>
-        <NavLink
-          onClick={() => authContext?.logout()}
-          to="/login"
-          className="text-emerald-300 hover:text-emerald-200"
-        >
+    <Container
+      component="header"
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        p: 2,
+        maxWidth: "100%",
+      }}
+    >
+      <Typography variant="h3" color="primary" sx={{ fontWeight: "bold" }}>
+        Tennis Kragujevac
+      </Typography>
+      <Button variant="contained" onClick={handleAddNewScore}>
+        Add new score
+      </Button>
+      <Box display={"flex"} alignItems={"center"} gap={2}>
+        <Typography>{authContext?.user?.fullName}</Typography>
+        <Button variant="contained" onClick={handleLogout}>
           Logout
-        </NavLink>
-      </nav>
-    </header>
+        </Button>
+      </Box>
+    </Container>
   );
 };
 

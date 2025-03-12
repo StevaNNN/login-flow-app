@@ -11,7 +11,7 @@ import validator from "validator";
 import dotenv from "dotenv";
 
 dotenv.config();
-const router = express.Router();
+export const authRouter = express.Router();
 
 const oauth2Client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -58,7 +58,7 @@ interface AuthRequest extends Request {
 }
 
 // Register
-router.post("/register", async (req: Request, res: Response): Promise<void> => {
+authRouter.post("/register", async (req: Request, res: Response): Promise<void> => {
   try {
     const { userName, fullName, email, password, role } = req.body;
     if (!validator.isEmail(email)) {
@@ -76,11 +76,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ message: "Email already in use" });
       return;
     }
-    const adminUser = await User.findOne({ role: "admin" });
-    if (role === "admin" && adminUser) {
-      res.status(400).json({ message: "An admin user already exists" });
-      return;
-    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       fullName,
@@ -100,7 +96,7 @@ router.post("/register", async (req: Request, res: Response): Promise<void> => {
 });
 
 // Login
-router.post("/login", async (req: Request, res: Response): Promise<void> => {
+authRouter.post("/login", async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     if (!validator.isEmail(email)) {
@@ -139,12 +135,12 @@ router.post("/login", async (req: Request, res: Response): Promise<void> => {
 });
 
 // Logout
-router.post("/logout", (_req, res) => {
+authRouter.post("/logout", (_req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
 });
 
 // Verify route that user is authentificated
-router.get(
+authRouter.get(
   "/me",
   verifyToken,
   async (req: AuthRequest, res: Response): Promise<void> => {
@@ -160,19 +156,8 @@ router.get(
   }
 );
 
-// Get all users
-router.get("/users", async (_req: Request, res: Response): Promise<void> => {
-  try {
-    const users = await User.find().select("-password");
-    res.json(users);
-  } catch (err) {
-    if (err instanceof Error)
-      res.status(500).json({ error: `Internal Server Error: ${err.message}` });
-  }
-});
-
 // Forgot password
-router.post(
+authRouter.post(
   "/forgot-password",
   async (req: Request, res: Response): Promise<void> => {
     const { email } = req.body;
@@ -207,7 +192,7 @@ router.post(
 );
 
 // Reset password
-router.post(
+authRouter.post(
   "/resetPassword/:token",
   async (req: Request, res: Response): Promise<void> => {
     try {
@@ -248,28 +233,4 @@ router.post(
   }
 );
 
-router.post(
-  "/deleteUser",
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { email } = req.body;
-      // Validate input
-      if (!validator.isEmail(email)) {
-        res.status(400).json({ message: "Invalid email address" });
-        return;
-      }
-      const user = await User.findOne({ email });
-      if (!user) {
-        res.status(404).json({ message: "User not found" });
-        return; // Ensure function exits
-      }
-      await user.deleteOne();
-      res.json({ message: "User deleted successfully" });
-    } catch (err) {
-      if (err instanceof Error)
-        res.status(500).json({ message: `Server error ${err.message}` });
-    }
-  }
-);
-
-export default router;
+export default authRouter;

@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import router from "./routes/auth";
+import authRouter from "./routes/auth";
+import { adminRouter } from "./routes/admin";
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-app.use("/api/auth", router);
+app.use("/api/auth", [router, adminRouter]);
 
 // Connect to MongoDB
 mongoose

@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import LayoutHeader from "./LayoutHeader";
 import { AuthContext } from "../context/auth/AuthContext";
+import { Container } from "@mui/material";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -14,12 +15,15 @@ const Layout: React.FC = () => {
   }, [navigate, role]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900">
+    <Container
+      className="min-h-screen"
+      sx={{ display: "flex", flexDirection: "column" }}
+    >
       <LayoutHeader />
-      <main className="flex-grow p-4 mt-16 mb-16">
+      <Container component={"main"} sx={{ flexGrow: 1 }}>
         <Outlet />
-      </main>
-    </div>
+      </Container>
+    </Container>
   );
 };
 

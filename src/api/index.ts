@@ -1,5 +1,5 @@
 import axios from "axios";
-import { USER } from "../Types";
+import { SEASON, USER } from "../Types";
 // import { useContext } from "react";
 // import { AuthContext } from "../context/auth/AuthContext";
 
@@ -34,7 +34,7 @@ API.interceptors.response.use(
   }
 );
 
-export const registerUser = (data: USER) => API.post("/register", data);
+export const registerUser = (data: Omit<USER, '_id'>) => API.post("/register", data);
 export const loginUser = (data: {
   email: USER["email"];
   password: USER["password"];
@@ -48,5 +48,7 @@ export const resetPassword = (token: string | undefined, newPassword: string) =>
 export const getUser = () => API.get(`/me`, { withCredentials: true });
 export const getUsers = () => API.get(`/users`);
 export const deleteUser = (email: string) => API.post("/deleteUser", { email });
+
+export const createSeason = (data: SEASON) => API.post("/createSeason", data);
 
 export default API;
