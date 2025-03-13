@@ -11,6 +11,8 @@ const AdminPage = () => {
   const [users, setUsers] = useState<USER[]>([]);
   const [seasons, setSeasons] = useState<SEASON[]>([]);
   const [seasonDialogOpened, setSeasonDialogOpened] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState<SEASON | null>(null);
+  console.log("render");
 
   useEffect(() => {
     const initData = async () => {
@@ -27,7 +29,8 @@ const AdminPage = () => {
   }, []);
 
   const handleSeasonCardClick = (_e: SyntheticEvent, cardData: SEASON) => {
-    console.log(cardData);
+    setSeasonDialogOpened(true);
+    setSelectedSeason(cardData);
   };
   const handleSeasonDialogOpen = () => setSeasonDialogOpened(true);
   const handleSeasonDialogClose = () => setSeasonDialogOpened(false);
@@ -38,7 +41,7 @@ const AdminPage = () => {
         <Button variant="outlined" onClick={handleSeasonDialogOpen}>
           Create new season
         </Button>
-        <Stack>
+        <Stack direction={"row"} gap={2}>
           {seasons.map((season) => {
             return (
               <SeasonCard
@@ -55,6 +58,7 @@ const AdminPage = () => {
           open={seasonDialogOpened}
           handleClose={handleSeasonDialogClose}
           users={users}
+          initialData={selectedSeason}
         />
       </Stack>
     </>

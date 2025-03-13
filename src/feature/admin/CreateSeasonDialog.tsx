@@ -9,13 +9,20 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
 import Slide from "@mui/material/Slide";
-import { USER, _PARTICIPANT_TYPE, _GROUP_TYPE, GROUP_TYPE } from "../../Types";
+import {
+  USER,
+  _PARTICIPANT_TYPE,
+  _GROUP_TYPE,
+  GROUP_TYPE,
+  SEASON,
+} from "../../Types";
 import { addSeason } from "../../api";
 
 const CreateSeasonDialog = (props: {
   open: boolean;
   handleClose: () => void;
   users: USER[];
+  initialData: SEASON | null;
 }) => {
   const { open, handleClose, users } = props;
   const [nextTick, setNextTick] = useState(0);
