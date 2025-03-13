@@ -1,4 +1,5 @@
-EMAIL_USER=stexthebeast1000@gmail.com
+Add .env file to server/.env
+EMAIL_USER=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=https://developers.google.com/oauthplayground
