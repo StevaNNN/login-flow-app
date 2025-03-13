@@ -30,18 +30,24 @@ export interface GROUP {
   results?: USER_RESULT[];
 }
 
-export type PARTICIPANT_TYPE = {
+export type _PARTICIPANT_TYPE = {
   label: USER["fullName"];
   id: string;
   selected: boolean;
 };
-export type GROUP_TYPE = {
+export type _GROUP_TYPE = {
   label: string;
   id: string;
   selected: boolean;
 };
+
+export interface GROUP_TYPE {
+  group: _GROUP_TYPE;
+  participants: _PARTICIPANT_TYPE[];
+}
+
 export interface SEASON {
   seasonName: string;
-  seasonParticipants?: PARTICIPANT_TYPE[];
+  seasonParticipants?: _PARTICIPANT_TYPE[];
   seasonGroups: GROUP_TYPE[];
 }

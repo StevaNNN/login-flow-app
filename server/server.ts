@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
-app.use("/api/auth", [router, adminRouter]);
+app.use("/api/auth", [authRouter, adminRouter]);
 
 // Connect to MongoDB
 mongoose

@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { USER } from "../../Types";
 import { AuthContext } from "../../context/auth/AuthContext";
 import { loginUser } from "../../api";
+import TextField from "@mui/material/TextField";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<USER["email"]>("");
@@ -22,70 +26,71 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm"
+    <Stack
+      spacing={4}
+      direction="column"
+      maxWidth={600}
+      margin="auto"
+      height={"100vh"}
+      justifyContent="center"
+      p={2}
+    >
+      <Typography
+        color="primary"
+        fontWeight="bold"
+        align="center"
+        variant={"h1"}
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            value={email}
-            autoComplete="email"
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="mb-6">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            autoComplete="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+        Login
+      </Typography>
+      <Stack
+        onSubmit={handleSubmit}
+        component={"form"}
+        spacing={2}
+        direction="column"
+      >
+        <TextField
+          type="email"
+          id="email"
+          required
+          label="Email"
+          placeholder="Email"
+          value={email}
+          autoComplete="email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <TextField
+          type="password"
+          id="password"
+          placeholder="Password"
+          label="Password"
+          autoComplete="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <Button variant="contained" type="submit">
           Login
-        </button>
-        <button
+        </Button>
+      </Stack>
+      <Stack direction="column" justifyContent="center" spacing={2}>
+        <Button
+          variant="outlined"
           type="button"
-          className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 mt-4"
           onClick={() => navigate("/register")}
         >
           Register
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outlined"
           type="button"
-          className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 mt-4"
           onClick={() => navigate("/forgotPassword")}
         >
           Forgot Password
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Stack>
+    </Stack>
   );
 };
 
