@@ -70,7 +70,7 @@ const LoginPage = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <Button variant="contained" type="submit">
+        <Button size="large" variant="contained" type="submit">
           Login
         </Button>
       </Stack>
@@ -78,6 +78,7 @@ const LoginPage = () => {
         <Button
           variant="outlined"
           type="button"
+          size="large"
           onClick={() => navigate("/register")}
         >
           Register
@@ -85,6 +86,7 @@ const LoginPage = () => {
         <Button
           variant="outlined"
           type="button"
+          size="large"
           onClick={() => navigate("/forgotPassword")}
         >
           Forgot Password

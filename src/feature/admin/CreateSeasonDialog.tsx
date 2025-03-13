@@ -5,11 +5,12 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
 import Slide from "@mui/material/Slide";
 import { USER, _PARTICIPANT_TYPE, _GROUP_TYPE, GROUP_TYPE } from "../../Types";
-import { createSeason } from "../../api";
-import { Box, Stack } from "@mui/material";
+import { addSeason } from "../../api";
 
 const CreateSeasonDialog = (props: {
   open: boolean;
@@ -82,7 +83,7 @@ const CreateSeasonDialog = (props: {
 
     const seasons = { seasonName, seasonParticipants, seasonGroups: groups };
     try {
-      const { data } = await createSeason(seasons);
+      const { data } = await addSeason(seasons);
       console.log(data);
     } catch (err) {
       console.error(err);

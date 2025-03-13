@@ -1,27 +1,37 @@
-import mongoose from "mongoose";
+import { model, Schema } from "mongoose";
 
-const SeasonSchema = new mongoose.Schema(
+// PARTICIPANT Type
+const ParticipantSchema = new Schema({
+  label: { type: String, required: true },
+  id: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  selected: { type: Boolean, default: false },
+});
+
+// GROUP Type Schema
+const GroupSchema = new Schema({
+  group: {
+    label: { type: String, required: true },
+    id: { type: String, required: true },
+    selected: { type: Boolean, default: false },
+  },
+  participants: [
+    {
+      label: { type: String, required: true },
+      id: { type: String, required: true },
+      selected: { type: Boolean, default: false },
+    },
+  ],
+});
+
+// SEASON Schema
+const SeasonSchema = new Schema(
   {
-    seasonName: { type: String, unique: true, required: true },
-    seasonParticipants: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    seasonGroups: [
-      {
-        groupName: { type: String, required: true },
-        groupParticipants: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-          },
-        ],
-      },
-    ],
+    seasonName: { type: String, required: true },
+    seasonParticipants: [ParticipantSchema],
+    seasonGroups: [GroupSchema],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Season", SeasonSchema);
+// Create and export the model
+export default model("Season", SeasonSchema);

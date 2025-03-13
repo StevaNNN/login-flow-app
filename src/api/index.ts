@@ -34,7 +34,8 @@ API.interceptors.response.use(
   }
 );
 
-export const registerUser = (data: Omit<USER, '_id'>) => API.post("/register", data);
+export const registerUser = (data: Omit<USER, "_id">) =>
+  API.post("/register", data);
 export const loginUser = (data: {
   email: USER["email"];
   password: USER["password"];
@@ -46,9 +47,10 @@ export const resetPassword = (token: string | undefined, newPassword: string) =>
   API.post(`/resetPassword/${token}`, { newPassword });
 ////////////////////////////////////////////////////////////////////////////////////////
 export const getUser = () => API.get(`/me`, { withCredentials: true });
-export const getUsers = () => API.get(`/users`);
+export const getUsers = () => API.get(`/users`, { withCredentials: true });
 export const deleteUser = (email: string) => API.post("/deleteUser", { email });
 
-export const createSeason = (data: SEASON) => API.post("/createSeason", data);
+export const addSeason = (data: SEASON) => API.post("/addSeason", data);
+export const getSeasons = () => API.get("/seasons");
 
 export default API;

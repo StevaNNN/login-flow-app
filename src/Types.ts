@@ -47,6 +47,7 @@ export interface GROUP_TYPE {
 }
 
 export interface SEASON {
+  _id?: string;
   seasonName: string;
   seasonParticipants?: _PARTICIPANT_TYPE[];
   seasonGroups: GROUP_TYPE[];

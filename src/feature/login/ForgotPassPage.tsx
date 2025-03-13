@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { forgotPassword } from "../../api";
 import { useNavigate } from "react-router-dom";
+import TextField from "@mui/material/TextField";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -19,34 +23,50 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Forgot Password</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="Enter your email"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Send Reset Link
-          </button>
-          <button
-            onClick={() => navigate("/login")}
-            className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            Back to login
-          </button>
-        </form>
-        {message && <p className="text-center mt-4">{message}</p>}
-      </div>
-    </div>
+    <Stack
+      spacing={4}
+      direction="column"
+      maxWidth={600}
+      margin="auto"
+      height={"100vh"}
+      justifyContent="center"
+      p={2}
+    >
+      <Typography
+        color="primary"
+        fontWeight="bold"
+        align="center"
+        variant={"h2"}
+      >
+        Forgot password
+      </Typography>
+      <Stack
+        onSubmit={handleSubmit}
+        component={"form"}
+        spacing={2}
+        direction="column"
+      >
+        <TextField
+          type="email"
+          value={email}
+          label="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="Enter your email"
+        />
+        <Button size="large" variant="contained" type="submit">
+          Send Reset Link
+        </Button>
+        <Button
+          size="large"
+          variant="outlined"
+          onClick={() => navigate("/login")}
+        >
+          Back to login
+        </Button>
+      </Stack>
+      {message && <p className="text-center mt-4">{message}</p>}
+    </Stack>
   );
 };
 

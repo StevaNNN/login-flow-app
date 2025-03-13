@@ -26,7 +26,6 @@ oauth2Client.setCredentials({
 const sendEmail = async (to: string, subject: string, html: string) => {
   try {
     const accessToken = await oauth2Client.getAccessToken();
-    console.log("accessToken", accessToken);
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -58,81 +57,103 @@ interface AuthRequest extends Request {
 }
 
 // Register
-authRouter.post("/register", async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { userName, fullName, email, password, role } = req.body;
-    if (!validator.isEmail(email)) {
-      res.status(400).json({ message: "Invalid email address" });
-      return;
-    }
-    if (!validator.isLength(password, { min: 6 })) {
-      res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters long" });
-      return;
-    }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      res.status(400).json({ message: "Email already in use" });
-      return;
-    }
+authRouter.post(
+  "/register",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userName, fullName, email, password, role } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      fullName,
-      userName,
-      email,
-      password: hashedPassword,
-      role,
-    });
-    await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (err) {
-    if (err instanceof Error)
-      res
-        .status(500)
-        .json({ message: `Internal Server Error: ${err.message}` });
+      if (!validator.isEmail(email)) {
+        res.status(400).json({ message: "Invalid email address" });
+        return;
+      }
+
+      if (!validator.isLength(password, { min: 6 })) {
+        res
+          .status(400)
+          .json({ message: "Password must be at least 6 characters long" });
+        return;
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        res.status(400).json({ message: "Email already in use" });
+        return;
+      }
+
+      const adminExistsAlready = await User.findOne({ role: "admin" });
+      if (adminExistsAlready) {
+        res
+          .status(400)
+          .json({
+            message:
+              "An admin user already exists, please create user with role 'Player'",
+          });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({
+        fullName,
+        userName,
+        email,
+        password: hashedPassword,
+        role,
+      });
+      await newUser.save();
+      res.status(201).json({ message: "User registered successfully" });
+    } catch (err) {
+      if (err instanceof Error)
+        res
+          .status(500)
+          .json({ message: `Internal Server Error: ${err.message}` });
+    }
   }
-});
+);
 
 // Login
-authRouter.post("/login", async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { email, password } = req.body;
-    if (!validator.isEmail(email)) {
-      res.status(400).json({ message: "Invalid email address" });
-      return;
-    }
-    const user = await User.findOne({ email });
-    if (!user) {
-      res.status(400).json({ error: "Invalid credentials" });
-      return; // Ensure the function exits after sending response
-    }
+authRouter.post(
+  "/login",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email, password } = req.body;
+      if (!validator.isEmail(email)) {
+        res.status(400).json({ message: "Invalid email address" });
+        return;
+      }
+      const user = await User.findOne({ email });
+      if (!user) {
+        res.status(400).json({ error: "Invalid credentials" });
+        return; // Ensure the function exits after sending response
+      }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      res.status(400).json({ error: "Invalid credentials" });
-      return;
-    }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        res.status(400).json({ error: "Invalid credentials" });
+        return;
+      }
 
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
-    );
+      const token = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET as string,
+        { expiresIn: "1h" }
+      );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      });
 
-    res.json({ message: "Login successful" });
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ error: `Internal Server Error: ${err.message}` });
+      res.json({ message: "Login successful" });
+    } catch (err) {
+      if (err instanceof Error) {
+        res
+          .status(500)
+          .json({ error: `Internal Server Error: ${err.message}` });
+      }
     }
   }
-});
+);
 
 // Logout
 authRouter.post("/logout", (_req, res) => {

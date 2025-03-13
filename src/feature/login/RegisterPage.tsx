@@ -1,9 +1,19 @@
-import { ChangeEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { USER } from "../../Types";
 import { registerUser } from "../../api";
+import Snackbar from "@mui/material/Snackbar";
+import TextField from "@mui/material/TextField";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
 
 const userRoles = ["player", "admin"];
+const ANIMATION_DURATION = 3000;
 
 const Register = () => {
   const [userName, setUserName] = useState<USER["userName"]>("");
@@ -11,11 +21,11 @@ const Register = () => {
   const [email, setEmail] = useState<USER["email"]>("");
   const [password, setPassword] = useState<USER["password"]>("");
   const [role, setRole] = useState<string>(userRoles[0]);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [notification, setNotification] = useState<string>("");
   const [errors, setErrors] = useState<{
-    fullName?: string | null;
-    email?: string | null;
-    password?: string | null;
+    fullName?: string | boolean;
+    email?: string | boolean;
+    password?: string | boolean;
   }>({});
   const navigate = useNavigate();
 
@@ -23,7 +33,7 @@ const Register = () => {
     if (fullName && fullName.length < 3) {
       return "Full name is mandatory and must be at least 3 characters long.";
     }
-    return null;
+    return false;
   };
 
   const validateEmail = (email?: string) => {
@@ -31,7 +41,7 @@ const Register = () => {
     if (email && !emailRegex.test(email)) {
       return "Invalid email address.";
     }
-    return null;
+    return false;
   };
 
   const validatePassword = (password?: string) => {
@@ -40,10 +50,10 @@ const Register = () => {
     if (password && !passwordRegex.test(password)) {
       return "Password must be at least 6 characters long, include at least one uppercase letter, one number, and one special character.";
     }
-    return null;
+    return false;
   };
 
-  const handleBlur = (field: string) => {
+  const handleBlur = (_e: SyntheticEvent, field: string) => {
     let error = null;
     switch (field) {
       case "fullName":
@@ -86,157 +96,141 @@ const Register = () => {
       });
       setNotification(data.message);
       setTimeout(() => {
-        setNotification(null);
         navigate("/login");
-      }, 3000); // Hide notification after 3 seconds and navigate to login
-    } catch (err: any) {
+      }, ANIMATION_DURATION);
+    } catch (err) {
       const { status } = err.response;
       const { message } = err.response.data;
       if (status === 400) {
         setNotification(message);
-        setTimeout(() => setNotification(null), 1500); // Hide notification after 3 seconds
         return;
       }
       setNotification(message);
-      setTimeout(() => setNotification(null), 1500); // Hide notification after 3 seconds
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      {notification && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-md">
-          {notification}
-        </div>
-      )}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm"
+    <>
+      <Stack
+        spacing={4}
+        direction="column"
+        maxWidth={600}
+        margin="auto"
+        height={"100vh"}
+        justifyContent="center"
+        p={2}
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        <Snackbar
+          open={!!notification}
+          message={notification}
+          autoHideDuration={ANIMATION_DURATION}
+        />
+        <Typography
+          color="primary"
+          fontWeight="bold"
+          align="center"
+          variant={"h2"}
+        >
+          Register user
+        </Typography>
 
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="fullName"
-          >
-            Full Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            onBlur={() => handleBlur("fullName")}
-            required
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.fullName ? "border-red-500" : ""
-            }`}
-          />
-          {errors.fullName && (
-            <p className="text-red-500 text-sm mt-2">{errors.fullName}</p>
-          )}
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="userName"
-          >
-            Username
-          </label>
-          <input
-            type="text"
-            id="userName"
-            placeholder="Username"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="email"
-          >
-            Email <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => handleBlur("email")}
-            required
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.email ? "border-red-500" : ""
-            }`}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-2">{errors.email}</p>
-          )}
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="role"
-          >
-            User Role
-          </label>
-          <select
-            id="role"
-            value={role}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              setRole(e.target.value)
-            }
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {userRoles.map((role) => (
-              <option value={role} key={role}>
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-6">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
-          >
-            Password <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onBlur={() => handleBlur("password")}
-            required
-            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.password ? "border-red-500" : ""
-            }`}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-2">{errors.password}</p>
-          )}
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <Stack
+          onSubmit={handleSubmit}
+          component={"form"}
+          spacing={2}
+          direction="column"
         >
-          Register
-        </button>
-        <button
-          type="button"
-          className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 mt-4"
-          onClick={() => navigate("/login")}
-        >
-          Back to Login
-        </button>
-      </form>
-    </div>
+          <FormControl>
+            <TextField
+              type="text"
+              id="fullName"
+              label="Full name"
+              placeholder="Full Name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              onBlur={(e) => handleBlur(e, "fullName")}
+              required
+              error={!!errors.fullName}
+            />
+            {errors.fullName && (
+              <Typography color={"error"}>{errors.fullName}</Typography>
+            )}
+          </FormControl>
+          <FormControl>
+            <TextField
+              type="text"
+              label="Username"
+              id="userName"
+              placeholder="Username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </FormControl>
+          <FormControl>
+            <TextField
+              type="email"
+              label="Email"
+              id="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={(e) => handleBlur(e, "email")}
+              required
+              error={!!errors.email}
+            />
+            {errors.email && (
+              <Typography color={"error"}>{errors.email}</Typography>
+            )}
+          </FormControl>
+          <FormControl>
+            <InputLabel shrink={true} id="role">
+              User role
+            </InputLabel>
+            <Select
+              id="role"
+              label=""
+              value={role}
+              onChange={(e: SelectChangeEvent) => setRole(e.target.value)}
+            >
+              {userRoles.map((role) => (
+                <MenuItem value={role} key={role}>
+                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl>
+            <TextField
+              type="password"
+              id="password"
+              label="Password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onBlur={(e) => handleBlur(e, "password")}
+              required
+              error={!!errors.password}
+            />
+            {errors.password && (
+              <Typography color="error">{errors.password}</Typography>
+            )}
+          </FormControl>
+          <Button size="large" variant="contained" type="submit">
+            Register
+          </Button>
+        </Stack>
+        <Stack direction="column" justifyContent="center" spacing={2}>
+          <Button
+            size="large"
+            type="button"
+            variant="outlined"
+            onClick={() => navigate("/login")}
+          >
+            Back to Login
+          </Button>
+        </Stack>
+      </Stack>
+    </>
   );
 };
 

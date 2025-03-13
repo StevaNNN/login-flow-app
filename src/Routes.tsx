@@ -6,8 +6,8 @@ import LoginPage from "./feature/login/LoginPage";
 import RegisterPage from "./feature/login/RegisterPage";
 import ResetPasswordPage from "./feature/login/ResetPassPage";
 import Layout from "./components/Layout";
-import AdminPage from "./pages/Admin/AdminPage";
-import PlayerPage from "./pages/PlayerPage";
+import AdminPage from "./feature/admin/AdminPage";
+import PlayerPage from "./feature/player/PlayerPage";
 
 export const router = createBrowserRouter([
   {
