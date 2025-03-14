@@ -47,14 +47,18 @@ const CreateSeasonDialog = (props: {
   const [seasonName, setSeasonName] = useState<string>(_seasonName);
   const [seasonGroupInputValue, setSeasonGroupInputValue] =
     useState<string>("");
-  const [seasonGroups, setSeasonGroup] = useState<_GROUP_TYPE[]>([]);
+  const [seasonGroups, setSeasonGroup] = useState<_GROUP_TYPE[]>(
+    _seasonGroups.map((sg) => sg.group)
+  );
 
   const [groups, setGroups] = useState<GROUP_TYPE[]>(_seasonGroups);
 
   useEffect(() => {
     setSeasonName(_seasonName);
-    setGroups(_seasonGroups); // TODO found out why groups Autocomplete is not populated
+    setGroups(_seasonGroups);
     setSeasonParticipants(_seasonParticipants);
+    const initialSeasonGroups = _seasonGroups.map((sg) => sg.group);
+    setSeasonGroup(initialSeasonGroups);
   }, [_seasonGroups, _seasonName, _seasonParticipants]);
 
   const parseUsersToOptions = () => {
@@ -180,8 +184,6 @@ const CreateSeasonDialog = (props: {
     setNextTick(0);
     if (reason === "backdropClick") return;
   };
-
-  console.log(groups, "steva");
 
   return (
     <Fragment>
