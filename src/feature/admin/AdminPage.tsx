@@ -1,5 +1,6 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 import { getSeasons, getUsers } from "../../api";
+import _ from "lodash";
 
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -11,15 +12,19 @@ const AdminPage = () => {
   const [users, setUsers] = useState<USER[]>([]);
   const [seasons, setSeasons] = useState<SEASON[]>([]);
   const [seasonDialogOpened, setSeasonDialogOpened] = useState(false);
-  const [selectedSeason, setSelectedSeason] = useState<SEASON | null>(null);
-  console.log("render");
+  const [selectedSeason, setSelectedSeason] = useState<SEASON>({
+    seasonName: "",
+    seasonParticipants: [],
+    seasonGroups: [],
+  });
 
   useEffect(() => {
     const initData = async () => {
       try {
         const userResponse = await getUsers();
         const seasonResponse = await getSeasons();
-        setUsers(userResponse.data);
+        const sortedUsers = _.sortBy(userResponse.data, "fullName");
+        setUsers(sortedUsers);
         setSeasons(seasonResponse.data);
       } catch (err) {
         console.error(err);
@@ -33,7 +38,10 @@ const AdminPage = () => {
     setSelectedSeason(cardData);
   };
   const handleSeasonDialogOpen = () => setSeasonDialogOpened(true);
-  const handleSeasonDialogClose = () => setSeasonDialogOpened(false);
+  const handleSeasonDialogClose = (_event?: object, reason?: string) => {
+    if (reason === "backdropClick") return;
+    setSeasonDialogOpened(false);
+  };
 
   return (
     <>

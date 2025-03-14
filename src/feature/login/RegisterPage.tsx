@@ -121,6 +121,7 @@ const Register = () => {
         p={2}
       >
         <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
           open={!!notification}
           message={notification}
           autoHideDuration={ANIMATION_DURATION}

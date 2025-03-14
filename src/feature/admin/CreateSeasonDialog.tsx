@@ -1,4 +1,10 @@
-import { useState, Fragment, FormEvent, SyntheticEvent } from "react";
+import {
+  useState,
+  Fragment,
+  FormEvent,
+  SyntheticEvent,
+  useEffect,
+} from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -17,26 +23,39 @@ import {
   SEASON,
 } from "../../Types";
 import { addSeason } from "../../api";
+import Snackbar from "@mui/material/Snackbar";
 
 const CreateSeasonDialog = (props: {
   open: boolean;
-  handleClose: () => void;
+  handleClose: (event?: object, reason?: string) => void;
   users: USER[];
-  initialData: SEASON | null;
+  initialData: SEASON;
 }) => {
-  const { open, handleClose, users } = props;
+  const { open, handleClose, users, initialData } = props;
+  const {
+    seasonName: _seasonName,
+    seasonGroups: _seasonGroups,
+    seasonParticipants: _seasonParticipants,
+  } = initialData;
+
+  const [message, setMessage] = useState("");
   const [nextTick, setNextTick] = useState(0);
-  const [seasonParticipants, setSeasonParticipants] = useState<
-    _PARTICIPANT_TYPE[]
-  >([]);
+  const [seasonParticipants, setSeasonParticipants] =
+    useState<_PARTICIPANT_TYPE[]>(_seasonParticipants);
   const [participantInputValue, setParticipantInputValue] =
     useState<string>("");
-  const [seasonName, setSeasonName] = useState<string>("");
+  const [seasonName, setSeasonName] = useState<string>(_seasonName);
   const [seasonGroupInputValue, setSeasonGroupInputValue] =
     useState<string>("");
   const [seasonGroups, setSeasonGroup] = useState<_GROUP_TYPE[]>([]);
 
-  const [groups, setGroups] = useState<GROUP_TYPE[]>([]);
+  const [groups, setGroups] = useState<GROUP_TYPE[]>(_seasonGroups);
+
+  useEffect(() => {
+    setSeasonName(_seasonName);
+    setGroups(_seasonGroups); // TODO found out why groups Autocomplete is not populated
+    setSeasonParticipants(_seasonParticipants);
+  }, [_seasonGroups, _seasonName, _seasonParticipants]);
 
   const parseUsersToOptions = () => {
     return users
@@ -90,39 +109,13 @@ const CreateSeasonDialog = (props: {
 
     const seasons = { seasonName, seasonParticipants, seasonGroups: groups };
     try {
-      const { data } = await addSeason(seasons);
-      console.log(data);
+      await addSeason(seasons);
+      setMessage("Succesfully add new season");
     } catch (err) {
-      console.error(err);
+      setMessage(err?.message);
     }
     resetForm();
     handleClose();
-  };
-
-  const hanldeTick = () => {
-    if (nextTick === 0) {
-      setNextTick(1);
-    } else {
-      setNextTick(0);
-    }
-    const groups = seasonGroups.map((group) => {
-      return { group, participants: [] };
-    });
-    setGroups(groups);
-  };
-
-  const resetForm = () => {
-    setParticipantInputValue("");
-    setSeasonGroupInputValue("");
-    setSeasonGroup([]);
-    setSeasonParticipants([]);
-    setSeasonName("");
-  };
-
-  const _handleClose = () => {
-    resetForm();
-    handleClose();
-    setNextTick(0);
   };
 
   const handleUsersToGroup = (
@@ -140,8 +133,12 @@ const CreateSeasonDialog = (props: {
   };
 
   const renderGroupInputs = (seasonGroup: _GROUP_TYPE) => {
+    const initialValue = groups.find(
+      (group) => group.group.id === seasonGroup.id
+    )?.participants;
     return (
       <Autocomplete
+        value={initialValue}
         multiple
         options={seasonParticipants}
         onChange={(event: SyntheticEvent, newValue: _PARTICIPANT_TYPE[]) =>
@@ -153,6 +150,38 @@ const CreateSeasonDialog = (props: {
       />
     );
   };
+
+  const hanldeTick = () => {
+    if (nextTick === 0) {
+      setNextTick(1);
+      if (groups.length < 1) {
+        const blankGroups = seasonGroups.map((group) => {
+          return { group, participants: [] };
+        });
+        setGroups(blankGroups);
+      }
+    } else if (nextTick === 1) {
+      setGroups((prevState) => [...prevState]);
+      setNextTick(0);
+    }
+  };
+
+  const resetForm = () => {
+    setParticipantInputValue("");
+    setSeasonGroupInputValue("");
+    setSeasonGroup([]);
+    setSeasonParticipants([]);
+    setSeasonName("");
+  };
+
+  const _handleClose = (event: object, reason?: string) => {
+    resetForm();
+    handleClose(event, reason);
+    setNextTick(0);
+    if (reason === "backdropClick") return;
+  };
+
+  console.log(groups, "steva");
 
   return (
     <Fragment>
@@ -244,8 +273,10 @@ const CreateSeasonDialog = (props: {
             timeout={700}
           >
             <Stack direction={"column"} gap={2}>
-              {seasonGroups.map((group: _GROUP_TYPE) => (
-                <Fragment key={group.id}>{renderGroupInputs(group)}</Fragment>
+              {groups.map((group: GROUP_TYPE) => (
+                <Fragment key={group.group.id}>
+                  {renderGroupInputs(group.group)}
+                </Fragment>
               ))}
             </Stack>
           </Slide>
@@ -273,6 +304,12 @@ const CreateSeasonDialog = (props: {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={6000}
+        open={!!message}
+        message={message}
+      />
     </Fragment>
   );
 };

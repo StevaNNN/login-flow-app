@@ -61,7 +61,12 @@ const ResetPasswordPage = () => {
           Reset Password
         </Button>
       </Stack>
-      <Snackbar autoHideDuration={6000} open={!!message} message={message} />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        autoHideDuration={6000}
+        open={!!message}
+        message={message}
+      />
     </Stack>
   );
 };

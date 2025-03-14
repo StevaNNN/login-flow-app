@@ -81,15 +81,15 @@ authRouter.post(
         return;
       }
 
-      const adminExistsAlready = await User.findOne({ role: "admin" });
-      if (adminExistsAlready) {
-        res
-          .status(400)
-          .json({
+      if (role === "admin") {
+        const adminExistsAlready = await User.findOne({ role: "admin" });
+        if (adminExistsAlready) {
+          res.status(400).json({
             message:
               "An admin user already exists, please create user with role 'Player'",
           });
-        return;
+          return;
+        }
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);

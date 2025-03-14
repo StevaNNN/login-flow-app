@@ -1,24 +1,43 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 const NotFoundPage: React.FC = () => {
   const userLoggedIn = useAuth();
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-900 min-h-screen">
-      <h1 className="text-4xl font-bold mb-4 text-emerald-300">
+    <Stack
+      spacing={4}
+      direction="column"
+      alignContent={"center"}
+      maxWidth={600}
+      margin="auto"
+      height={"100vh"}
+      justifyContent="center"
+      p={2}
+    >
+      <Typography
+        align="center"
+        variant="h2"
+        color="primary"
+        style={{ fontWeight: 700 }}
+      >
         404 - Page Not Found
-      </h1>
-      <p className="text-lg mb-6 text-emerald-300">
+      </Typography>
+      <Typography align="center">
         Sorry, the page you are looking for does not exist.
-      </p>
-      <Link
-        className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        component={Link}
         to={`${userLoggedIn ? "/" : "/login"}`}
       >
         Go back to Home
-      </Link>
-    </div>
+      </Button>
+    </Stack>
   );
 };
 
