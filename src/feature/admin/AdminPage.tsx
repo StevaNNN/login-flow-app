@@ -1,73 +1,90 @@
-import { SyntheticEvent, useEffect, useState } from "react";
-import { getSeasons, getUsers } from "../../api";
-import _ from "lodash";
-
+import { SyntheticEvent, useEffect } from "react";
+import { deleteSeason, getSeasons, getUsers } from "../../api";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import CreateSeasonDialog from "./CreateSeasonDialog";
-import { SEASON, USER } from "../../Types";
-import SeasonCard from "../../components/Season/SeasonCard";
+import SeasonDialog from "./SeasonDialog";
+import { SEASON } from "../../Types";
+import SeasonCard from "../../components/SeasonCard";
+import { useDispatch, useSelector } from "react-redux";
+import { setUsers } from "../../redux/slices/usersSlice";
+import { RootState } from "../../redux/store";
+import { setSeasons, selectSeason } from "../../redux/slices/seasonsSlice";
+import { setEditMode, setDialogState } from "../../redux/slices/appSlice";
 
 const AdminPage = () => {
-  const [users, setUsers] = useState<USER[]>([]);
-  const [seasons, setSeasons] = useState<SEASON[]>([]);
-  const [seasonDialogOpened, setSeasonDialogOpened] = useState(false);
-  const [selectedSeason, setSelectedSeason] = useState<SEASON>({
-    seasonName: "",
-    seasonParticipants: [],
-    seasonGroups: [],
-  });
+  const dispatch = useDispatch();
+  const { seasons } = useSelector((state: RootState) => state.seasons);
 
   useEffect(() => {
     const initData = async () => {
       try {
         const userResponse = await getUsers();
         const seasonResponse = await getSeasons();
-        const sortedUsers = _.sortBy(userResponse.data, "fullName");
-        setUsers(sortedUsers);
-        setSeasons(seasonResponse.data);
+        dispatch(setUsers(userResponse.data));
+        dispatch(setSeasons(seasonResponse.data));
       } catch (err) {
         console.error(err);
       }
     };
     initData();
-  }, []);
+  }, [dispatch]);
 
-  const handleSeasonCardClick = (_e: SyntheticEvent, cardData: SEASON) => {
-    setSeasonDialogOpened(true);
-    setSelectedSeason(cardData);
+  /**
+   * Selects the clicked season and pass data to the SeasonDialog for edits
+   * @param _e
+   * @param cardData
+   */
+  const handleSeasonCardEdit = (_e: SyntheticEvent, cardData: SEASON) => {
+    dispatch(setDialogState(true));
+    dispatch(setEditMode(true));
+    dispatch(selectSeason(cardData));
   };
-  const handleSeasonDialogOpen = () => setSeasonDialogOpened(true);
-  const handleSeasonDialogClose = (_event?: object, reason?: string) => {
-    if (reason === "backdropClick") return;
-    setSeasonDialogOpened(false);
+
+  /**
+   * Deletes season clicked season
+   * @param _e
+   * @param cardData
+   */
+  const handleSeasonCarDelete = async (
+    _e: SyntheticEvent,
+    cardData: SEASON
+  ) => {
+    const tempSeasons = seasons.filter(
+      (season) => season.seasonId !== cardData.seasonId
+    );
+    dispatch(setSeasons(tempSeasons));
+    try {
+      await deleteSeason(cardData.seasonId || "");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
     <>
       <Stack direction="column" spacing={2} height={"calc(100vh - 88px)"} p={4}>
-        <Button variant="outlined" onClick={handleSeasonDialogOpen}>
+        <Button
+          variant="outlined"
+          onClick={() => dispatch(setDialogState(true))}
+        >
           Create new season
         </Button>
-        <Stack direction={"row"} gap={2}>
-          {seasons.map((season) => {
-            return (
-              <SeasonCard
-                key={season._id}
-                seasonName={season.seasonName}
-                seasonGroups={season.seasonGroups}
-                seasonParticipants={season.seasonParticipants}
-                onClick={(e) => handleSeasonCardClick(e, season)}
-              />
-            );
-          })}
+        <Stack direction={"row"} gap={2} flexWrap="wrap">
+          {seasons.length > 1 &&
+            seasons.map((season) => {
+              return (
+                <SeasonCard
+                  key={season.seasonId}
+                  seasonName={season.seasonName}
+                  seasonGroups={season.seasonGroups}
+                  seasonParticipants={season.seasonParticipants}
+                  onEdit={(e) => handleSeasonCardEdit(e, season)}
+                  onDelete={(e) => handleSeasonCarDelete(e, season)}
+                />
+              );
+            })}
         </Stack>
-        <CreateSeasonDialog
-          open={seasonDialogOpened}
-          handleClose={handleSeasonDialogClose}
-          users={users}
-          initialData={selectedSeason}
-        />
+        <SeasonDialog />
       </Stack>
     </>
   );

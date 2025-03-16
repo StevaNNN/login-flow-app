@@ -15,71 +15,82 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
 import Slide from "@mui/material/Slide";
-import {
-  USER,
-  _PARTICIPANT_TYPE,
-  _GROUP_TYPE,
-  GROUP_TYPE,
-  SEASON,
-} from "../../Types";
-import { addSeason } from "../../api";
+import { _PARTICIPANT_TYPE, _GROUP_TYPE, GROUP_TYPE } from "../../Types";
+import { addSeason, editSeason } from "../../api";
 import Snackbar from "@mui/material/Snackbar";
+import { RootState } from "../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { setDialogState, setEditMode } from "../../redux/slices/appSlice";
+import {
+  selectedSeasonInitialData,
+  selectSeason,
+  setSeasons,
+} from "../../redux/slices/seasonsSlice";
+import _ from "lodash";
 
-const CreateSeasonDialog = (props: {
-  open: boolean;
-  handleClose: (event?: object, reason?: string) => void;
-  users: USER[];
-  initialData: SEASON;
-}) => {
-  const { open, handleClose, users, initialData } = props;
+const SeasonDialog = () => {
+  const dispatch = useDispatch();
+  const { dialogOpened, editMode } = useSelector(
+    (state: RootState) => state.appState
+  );
+  const { users } = useSelector((state: RootState) => state.users);
+  const { selectedSeason, seasons } = useSelector(
+    (state: RootState) => state.seasons
+  );
   const {
+    seasonId,
     seasonName: _seasonName,
     seasonGroups: _seasonGroups,
     seasonParticipants: _seasonParticipants,
-  } = initialData;
+  } = selectedSeason;
 
   const [message, setMessage] = useState("");
   const [nextTick, setNextTick] = useState(0);
-  const [seasonParticipants, setSeasonParticipants] =
-    useState<_PARTICIPANT_TYPE[]>(_seasonParticipants);
+
   const [participantInputValue, setParticipantInputValue] =
     useState<string>("");
-  const [seasonName, setSeasonName] = useState<string>(_seasonName);
-  const [seasonGroupInputValue, setSeasonGroupInputValue] =
-    useState<string>("");
-  const [seasonGroups, setSeasonGroup] = useState<_GROUP_TYPE[]>(
-    _seasonGroups.map((sg) => sg.group)
-  );
 
-  const [groups, setGroups] = useState<GROUP_TYPE[]>(_seasonGroups);
+  const [groupInputValue, setGroupInputValue] = useState<string>("");
+  const [groups, setGroups] = useState<_GROUP_TYPE[]>([]);
 
+  const [seasonName, setSeasonName] = useState<string>("");
+  const [seasonGroups, setSeasonGroups] = useState<GROUP_TYPE[]>([]);
+  const [seasonParticipants, setSeasonParticipants] = useState<
+    _PARTICIPANT_TYPE[]
+  >([]);
+
+  /**
+   * Prepopulating fields in edit mode
+   */
   useEffect(() => {
-    setSeasonName(_seasonName);
-    setGroups(_seasonGroups);
-    setSeasonParticipants(_seasonParticipants);
-    const initialSeasonGroups = _seasonGroups.map((sg) => sg.group);
-    setSeasonGroup(initialSeasonGroups);
-  }, [_seasonGroups, _seasonName, _seasonParticipants]);
+    if (editMode) {
+      setSeasonName(_seasonName);
+      setSeasonGroups(_seasonGroups);
+      setSeasonParticipants(_seasonParticipants);
+      const initialSeasonGroups = _seasonGroups.map((sg) => sg.group);
+      setGroups(initialSeasonGroups);
+    }
+  }, [_seasonGroups, _seasonName, _seasonParticipants, editMode]);
 
+  /**
+   * Parser for participants autocomplete field where we assign users to the season
+   * @returns {label: string, id: string, selected: boolean}
+   */
   const parseUsersToOptions = () => {
-    return users
-      .map((user) => {
-        if (user.role !== "admin") {
-          return {
-            label: user.fullName,
-            id: user._id,
-            selected: false,
-          };
-        }
-        return {
-          label: "",
-          id: "",
-          selected: false,
-        };
-      })
-      .slice(1);
+    return users.map((user) => {
+      return {
+        label: user.fullName,
+        id: user._id,
+        selected: false,
+      };
+    });
   };
 
+  /**
+   * Handler for participants autocomplete field on first slide
+   * @param _event React.SyntheticEvent
+   * @param newValue _PARTICIPANT_TYPE[]
+   */
   const handleParticipantsOnChange = (
     _event: React.SyntheticEvent,
     newValue: _PARTICIPANT_TYPE[]
@@ -91,6 +102,11 @@ const CreateSeasonDialog = (props: {
     setSeasonParticipants(updatedSeasonParticipants);
   };
 
+  /**
+   * Handler for seasson group on change on first slide
+   * @param _event React.SyntheticEvent
+   * @param newValue (_GROUP_TYPE | string)[]
+   */
   const handleSeasonGroupsOnChange = (
     _event: React.SyntheticEvent,
     newValue: (_GROUP_TYPE | string)[]
@@ -102,32 +118,76 @@ const CreateSeasonDialog = (props: {
       return { ...item, selected: true };
     });
 
-    setSeasonGroup(updatedSeasonGroups);
+    setGroups(updatedSeasonGroups);
   };
 
+  /**
+   * Form submit handler for both edit and add variants
+   * @param e FormEvent<HTMLFormElement>
+   * @returns void
+   */
   const handleSeasonSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!seasonName || !groups.length || !seasonParticipants.length) {
+
+    if (!seasonName || !seasonGroups.length || !seasonParticipants.length) {
       return;
     }
 
-    const seasons = { seasonName, seasonParticipants, seasonGroups: groups };
-    try {
-      await addSeason(seasons);
-      setMessage("Succesfully add new season");
-    } catch (err) {
-      setMessage(err?.message);
+    const season = {
+      seasonId: seasonId || crypto.randomUUID(),
+      seasonName,
+      seasonParticipants,
+      seasonGroups,
+    };
+
+    const indexOfEditedSeason = seasons.findIndex(
+      (_season) => _season.seasonId === season.seasonId
+    );
+
+    let updatedSeasons = seasons;
+
+    if (indexOfEditedSeason !== -1) {
+      // Create a new array with the updated season at the correct index
+      const seasonsCopy = [...seasons];
+      seasonsCopy[indexOfEditedSeason] = season;
+
+      updatedSeasons = seasonsCopy; // Updated array with the modified season
     }
+
+    if (editMode) {
+      dispatch(setSeasons(updatedSeasons));
+      try {
+        await editSeason(season);
+        setMessage("Season updated succesfully");
+      } catch (err) {
+        setMessage(err?.message);
+      }
+    } else {
+      try {
+        await addSeason(season);
+        dispatch(setSeasons([...seasons, season]));
+        setMessage("Succesfully add new season");
+      } catch (err) {
+        setMessage(err?.message);
+      }
+    }
+
     resetForm();
-    handleClose();
   };
 
+  /**
+   * Handler for each group Autocomplete field where we
+   * populate each group with participants, also supports the selectedSeason data
+   * @param _event
+   * @param newValue
+   * @param seasonGroup
+   */
   const handleUsersToGroup = (
     _event: SyntheticEvent,
     newValue: _PARTICIPANT_TYPE[],
     seasonGroup: _GROUP_TYPE
   ) => {
-    setGroups((prevGroups: GROUP_TYPE[]) =>
+    setSeasonGroups((prevGroups: GROUP_TYPE[]) =>
       prevGroups.map((group) =>
         group.group.id === seasonGroup.id
           ? { ...group, participants: newValue }
@@ -136,10 +196,18 @@ const CreateSeasonDialog = (props: {
     );
   };
 
+  /**
+   * Helper renderr for the added seasonGroups on first wizzard
+   * @param seasonGroup
+   * @returns
+   */
+  console.log(seasonGroups);
+  console.log(groups);
   const renderGroupInputs = (seasonGroup: _GROUP_TYPE) => {
-    const initialValue = groups.find(
+    const initialValue = seasonGroups.find(
       (group) => group.group.id === seasonGroup.id
     )?.participants;
+
     return (
       <Autocomplete
         value={initialValue}
@@ -155,41 +223,65 @@ const CreateSeasonDialog = (props: {
     );
   };
 
+  /**
+   * Handles next/previous actions
+   */
   const hanldeTick = () => {
     if (nextTick === 0) {
-      setNextTick(1);
-      if (groups.length < 1) {
-        const blankGroups = seasonGroups.map((group) => {
+      if (seasonGroups.length < 1) {
+        // Case when there are no seasonGroups yet
+        const blankGroups = groups.map((group) => {
           return { group, participants: [] };
         });
-        setGroups(blankGroups);
+        setSeasonGroups(blankGroups);
+      } else if (groups.length !== seasonGroups.length) {
+        // Case in edit mode where we add new group and need to pass it to next wizard pane
+        const lenghtToAddBlack = groups.length - seasonGroups.length;
+        const test = groups.slice(-lenghtToAddBlack);
+        const editedBlankGroups = test.map((group) => {
+          return { group, participants: [] };
+        });
+        setSeasonGroups((prevState) => [...prevState, ...editedBlankGroups]);
       }
+      setNextTick(1);
     } else if (nextTick === 1) {
-      setGroups((prevState) => [...prevState]);
+      // Case to hanlde populated seasonGroups with users and to preserve that state when go back and forth
+      setSeasonGroups((prevState) => [...prevState]);
       setNextTick(0);
     }
   };
 
+  /**
+   * Reseting form inputs
+   */
   const resetForm = () => {
     setParticipantInputValue("");
-    setSeasonGroupInputValue("");
-    setSeasonGroup([]);
+    setGroupInputValue("");
+    setGroups([]);
     setSeasonParticipants([]);
     setSeasonName("");
+    setNextTick(0);
+    dispatch(setDialogState(false));
+    dispatch(setEditMode(false));
+    dispatch(selectSeason(selectedSeasonInitialData));
   };
 
-  const _handleClose = (event: object, reason?: string) => {
-    resetForm();
-    handleClose(event, reason);
-    setNextTick(0);
-    if (reason === "backdropClick") return;
+  /**
+   * Close dialog handler
+   * @param _event
+   * @param reason
+   */
+  const handleClose = (_event: object, reason?: string) => {
+    if (reason !== "backdropClick") {
+      resetForm();
+    }
   };
 
   return (
     <Fragment>
       <Dialog
-        open={open}
-        onClose={_handleClose}
+        open={dialogOpened}
+        onClose={handleClose}
         slotProps={{
           paper: {
             component: "form",
@@ -203,9 +295,14 @@ const CreateSeasonDialog = (props: {
           },
         }}
       >
-        <DialogTitle>
-          {nextTick === 0 ? "Create season" : "Assign Players to each group"}
-        </DialogTitle>
+        {nextTick === 0 ? (
+          <DialogTitle>
+            {editMode ? "Edit season" : "Create season"}
+          </DialogTitle>
+        ) : (
+          <DialogTitle>Assign Players to each group</DialogTitle>
+        )}
+
         <DialogContent
           dividers
           sx={{ display: "flex", flexDirection: "column", gap: 2 }}
@@ -230,13 +327,13 @@ const CreateSeasonDialog = (props: {
               <Autocomplete
                 multiple
                 freeSolo
-                value={seasonGroups}
+                value={groups}
                 onChange={handleSeasonGroupsOnChange}
-                inputValue={seasonGroupInputValue}
+                inputValue={groupInputValue}
                 onInputChange={(_event, newInputValue) =>
-                  setSeasonGroupInputValue(newInputValue)
+                  setGroupInputValue(newInputValue)
                 }
-                options={seasonGroups} // You can replace this with predefined options if needed
+                options={groups} // You can replace this with predefined options if needed
                 getOptionLabel={(option) =>
                   typeof option === "string" ? option : option.label
                 }
@@ -275,7 +372,7 @@ const CreateSeasonDialog = (props: {
             timeout={700}
           >
             <Stack direction={"column"} gap={2}>
-              {groups.map((group: GROUP_TYPE) => (
+              {seasonGroups.map((group: GROUP_TYPE) => (
                 <Fragment key={group.group.id}>
                   {renderGroupInputs(group.group)}
                 </Fragment>
@@ -289,9 +386,7 @@ const CreateSeasonDialog = (props: {
             justifyContent={nextTick === 0 ? "end" : "start"}
           >
             <Button
-              disabled={
-                seasonGroups.length < 1 || seasonParticipants.length < 1
-              }
+              disabled={groups.length < 1 || seasonParticipants.length < 1}
               onClick={hanldeTick}
               variant="contained"
             >
@@ -300,9 +395,9 @@ const CreateSeasonDialog = (props: {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={_handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>Cancel</Button>
           <Button variant="contained" type="submit">
-            Create
+            {editMode ? "Update" : "Create"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -316,4 +411,4 @@ const CreateSeasonDialog = (props: {
   );
 };
 
-export default CreateSeasonDialog;
+export default SeasonDialog;

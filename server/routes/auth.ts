@@ -136,7 +136,7 @@ authRouter.post(
       const token = jwt.sign(
         { userId: user._id },
         process.env.JWT_SECRET as string,
-        { expiresIn: "1h" }
+        { expiresIn: "1m" }
       );
 
       res.cookie("token", token, {

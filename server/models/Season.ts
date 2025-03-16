@@ -26,6 +26,7 @@ const GroupSchema = new Schema({
 // SEASON Schema
 const SeasonSchema = new Schema(
   {
+    seasonId: { type: String, required: true },
     seasonName: { type: String, required: true },
     seasonParticipants: [ParticipantSchema],
     seasonGroups: [GroupSchema],

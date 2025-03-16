@@ -64,14 +64,15 @@ adminRouter.post(
   "/addSeason",
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const { seasonName, seasonParticipants, seasonGroups } = req.body;
-      console.log(seasonName);
-      const existingSeason = await Season.findOne({ seasonName });
+      const { seasonId, seasonName, seasonParticipants, seasonGroups } =
+        req.body;
+      const existingSeason = await Season.findOne({ seasonId });
       if (existingSeason) {
         res.status(400).json({ message: "Season already in exists" });
         return;
       }
       const newSeason = new Season({
+        seasonId,
         seasonName,
         seasonParticipants,
         seasonGroups,
@@ -83,6 +84,65 @@ adminRouter.post(
         res
           .status(500)
           .json({ message: `Internal Server Error: ${err.message}` });
+    }
+  }
+);
+
+adminRouter.put(
+  "/editSeason",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { seasonId, seasonName, seasonParticipants, seasonGroups } =
+        req.body;
+
+      if (!seasonId || !seasonName || !seasonParticipants || !seasonGroups) {
+        res.status(400).json({ message: "Missing required fields" });
+        return;
+      }
+
+      const existingSeason = await Season.findOne({ seasonId });
+      if (!existingSeason) {
+        res.status(404).json({ message: "Season not found" });
+        return;
+      }
+
+      existingSeason.seasonName = seasonName;
+      existingSeason.seasonParticipants = seasonParticipants;
+      existingSeason.seasonGroups = seasonGroups;
+
+      await existingSeason.save();
+
+      res.status(200).json({ message: "Season updated successfully" });
+    } catch (err) {
+      console.error("Error updating season:", err);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+);
+
+adminRouter.delete(
+  "/deleteSeason",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { seasonId } = req.query;
+
+      if (!seasonId) {
+        res.status(400).json({ message: "Missing seasonId" });
+        return;
+      }
+
+      const existingSeason = await Season.findOne({ seasonId });
+      if (!existingSeason) {
+        res.status(404).json({ message: "Season not found" });
+        return;
+      }
+
+      await existingSeason.deleteOne();
+
+      res.status(200).json({ message: "Season deleted successfully" });
+    } catch (err) {
+      console.error("Error deleting season:", err);
+      res.status(500).json({ message: "Internal Server Error" });
     }
   }
 );

@@ -4,7 +4,7 @@ import { SEASON, USER } from "../Types";
 // import { AuthContext } from "../context/auth/AuthContext";
 
 const API = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api/auth`,
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
   withCredentials: true, // Allow sending cookies
 });
 
@@ -34,23 +34,31 @@ API.interceptors.response.use(
   }
 );
 
+/////////////////////////////////////AUTH///////////////////////////////////////////////
 export const registerUser = (data: Omit<USER, "_id">) =>
-  API.post("/register", data);
+  API.post("/auth/register", data);
 export const loginUser = (data: {
   email: USER["email"];
   password: USER["password"];
-}) => API.post("/login", data);
-export const logoutUser = () => API.post("/logout");
+}) => API.post("/auth/login", data);
+export const logoutUser = () => API.post("/auth/logout");
 export const forgotPassword = (email: string) =>
-  API.post("/forgot-password", { email });
+  API.post("/auth/forgot-password", { email });
 export const resetPassword = (token: string | undefined, newPassword: string) =>
-  API.post(`/resetPassword/${token}`, { newPassword });
+  API.post(`/auth/resetPassword/${token}`, { newPassword });
+export const getUser = () => API.get(`/auth/me`, { withCredentials: true });
 ////////////////////////////////////////////////////////////////////////////////////////
-export const getUser = () => API.get(`/me`, { withCredentials: true });
-export const getUsers = () => API.get(`/users`, { withCredentials: true });
-export const deleteUser = (email: string) => API.post("/deleteUser", { email });
 
-export const addSeason = (data: SEASON) => API.post("/addSeason", data);
-export const getSeasons = () => API.get("/seasons");
+/////////////////////////////////////ADMIN///////////////////////////////////////////////
+export const getUsers = () =>
+  API.get(`/admin/users`, { withCredentials: true });
+export const deleteUser = (email: string) =>
+  API.post("/admin/deleteUser", { email });
 
+export const addSeason = (data: SEASON) => API.post("/admin/addSeason", data);
+export const getSeasons = () => API.get("/admin/seasons");
+export const editSeason = (data: SEASON) => API.put("/admin/editSeason", data);
+export const deleteSeason = (seasonId: string) =>
+  API.delete(`/admin/deleteSeason?seasonId=${seasonId}`);
+/////////////////////////////////////////////////////////////////////////////////////////
 export default API;
