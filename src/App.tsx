@@ -1,12 +1,15 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./Routes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Snackbar from "@mui/material/Snackbar";
 import { CssBaseline } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 
 const App = () => {
-  const { darkMode } = useSelector((state: RootState) => state.appState);
+  const { darkMode, snackBar } = useSelector(
+    (state: RootState) => state.appState
+  );
 
   const theme = createTheme({
     shape: {
@@ -43,10 +46,13 @@ const App = () => {
     },
   });
 
+  console.log(snackBar);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RouterProvider router={router} />
+      <Snackbar {...snackBar} />
     </ThemeProvider>
   );
 };

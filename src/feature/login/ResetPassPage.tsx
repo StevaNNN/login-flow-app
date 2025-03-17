@@ -5,24 +5,36 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
+import { useDispatch, useSelector } from "react-redux";
+import { setSnackBar } from "../../redux/slices/appSlice";
+import { RootState } from "../../redux/store";
 
 const ResetPasswordPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { token } = useParams<string>();
   const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+
+  const { snackBar } = useSelector((state: RootState) => state.appState);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const res = await resetPassword(token, newPassword);
-      setMessage(res.data.message);
+      dispatch(setSnackBar({ message: res.data.message }));
       setTimeout(() => {
         navigate("/login");
       }, 300);
     } catch (err) {
-      if (err instanceof Error) setMessage("Error resetting password");
+      if (err instanceof Error)
+        dispatch(setSnackBar({ message: "Error resetting password" }));
     }
+
+    setTimeout(() => {
+      dispatch(setSnackBar({ message: "" }));
+    }, snackBar.autoHideDuration);
   };
 
   return (
@@ -61,12 +73,6 @@ const ResetPasswordPage = () => {
           Reset Password
         </Button>
       </Stack>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={6000}
-        open={!!message}
-        message={message}
-      />
     </Stack>
   );
 };

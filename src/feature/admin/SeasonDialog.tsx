@@ -10,14 +10,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { _PARTICIPANT_TYPE, _GROUP_TYPE, GROUP_TYPE } from "../../Types";
 import { addSeason, editSeason } from "../../api";
 import { RootState } from "../../redux/store";
-import { setDialogState, setEditMode } from "../../redux/slices/appSlice";
+import {
+  setDialogState,
+  setEditMode,
+  setSnackBar,
+} from "../../redux/slices/appSlice";
 import {
   selectedSeasonInitialData,
   selectSeason,
   setSeasons,
 } from "../../redux/slices/seasonsSlice";
 
-import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -31,13 +34,15 @@ import Slide from "@mui/material/Slide";
 
 const SeasonDialog = () => {
   const dispatch = useDispatch();
-  const { dialogOpened, editMode } = useSelector(
+
+  const { dialogOpened, editMode, snackBar } = useSelector(
     (state: RootState) => state.appState
   );
   const { users } = useSelector((state: RootState) => state.users);
   const { selectedSeason, seasons } = useSelector(
     (state: RootState) => state.seasons
   );
+
   const {
     seasonId,
     seasonName: _seasonName,
@@ -45,9 +50,7 @@ const SeasonDialog = () => {
     seasonParticipants: _seasonParticipants,
   } = selectedSeason;
 
-  const [message, setMessage] = useState("");
   const [nextTick, setNextTick] = useState(0);
-
   const [participantInputValue, setParticipantInputValue] =
     useState<string>("");
 
@@ -134,6 +137,8 @@ const SeasonDialog = () => {
       return;
     }
 
+    if (nextTick === 0) return;
+
     const season = {
       seasonId: seasonId || crypto.randomUUID(),
       seasonName,
@@ -159,20 +164,24 @@ const SeasonDialog = () => {
       dispatch(setSeasons(updatedSeasons));
       try {
         await editSeason(season);
-        setMessage("Season updated succesfully");
+        dispatch(setSnackBar({ message: "Season updated succesfully" }));
       } catch (err) {
-        if (err instanceof Error) setMessage(err?.message);
+        if (err instanceof Error)
+          dispatch(setSnackBar({ message: err.message }));
       }
     } else {
       try {
         await addSeason(season);
         dispatch(setSeasons([...seasons, season]));
-        setMessage("Succesfully add new season");
+        dispatch(setSnackBar({ message: "Succesfully add new season" }));
       } catch (err) {
-        if (err instanceof Error) setMessage(err?.message);
+        if (err instanceof Error)
+          dispatch(setSnackBar({ message: err.message }));
       }
     }
-
+    setTimeout(() => {
+      dispatch(setSnackBar({ message: "" }));
+    }, snackBar.autoHideDuration);
     resetForm();
   };
 
@@ -418,17 +427,11 @@ const SeasonDialog = () => {
           </Button>
           <div style={{ flex: 1 }} />
           <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" type="submit">
+          <Button variant="contained" type="submit" disabled={nextTick === 0}>
             {editMode ? "Update" : "Create"}
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={1000}
-        open={!!message}
-        message={message}
-      />
     </Fragment>
   );
 };

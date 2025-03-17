@@ -91,7 +91,7 @@ const AdminPage = () => {
   return (
     <>
       <Stack direction="column" spacing={4}>
-        <Box gap={4} display={"flex"} justifyContent={"flex-end"}>
+        <Box gap={4} display={"flex"}>
           <Button
             variant="contained"
             color="success"

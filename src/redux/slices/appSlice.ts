@@ -5,12 +5,30 @@ export interface APP_STATE {
   editMode: boolean;
   darkMode: boolean;
   confirmDialogOpened: boolean;
+  snackBar: {
+    message: string;
+    autoHideDuration?: number;
+    anchorOrigin?: {
+      vertical: "top" | "bottom";
+      horizontal: "left" | "center" | "right";
+    };
+    open?: boolean;
+  };
 }
 
 const initialState: APP_STATE = {
   dialogOpened: false,
   editMode: false,
   confirmDialogOpened: false,
+  snackBar: {
+    anchorOrigin: {
+      vertical: "bottom",
+      horizontal: "right",
+    },
+    autoHideDuration: 3000,
+    message: "",
+    open: false,
+  },
   darkMode: JSON.parse(localStorage.getItem("darkMode") || "false"),
 };
 
@@ -37,6 +55,13 @@ export const appSlice = createSlice({
       localStorage.setItem("darkMode", JSON.stringify(action.payload));
       state.darkMode = action.payload;
     },
+    setSnackBar: (state, action: PayloadAction<APP_STATE["snackBar"]>) => {
+      state.snackBar = {
+        ...state.snackBar,
+        ...action.payload,
+        open: !!action.payload.message,
+      };
+    },
   },
 });
 
@@ -46,6 +71,7 @@ export const {
   setEditMode,
   setDarkMode,
   setConfirmationDialogState,
+  setSnackBar,
 } = appSlice.actions;
 
 export default appSlice.reducer;

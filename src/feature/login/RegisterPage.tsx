@@ -2,7 +2,6 @@ import { SyntheticEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { USER } from "../../Types";
 import { registerUser } from "../../api";
-import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -11,23 +10,29 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
+import { setSnackBar } from "../../redux/slices/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const userRoles = ["player", "admin"];
 const ANIMATION_DURATION = 3000;
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { snackBar } = useSelector((state: RootState) => state.appState);
+
   const [userName, setUserName] = useState<USER["userName"]>("");
   const [fullName, setFullName] = useState<USER["fullName"]>("");
   const [email, setEmail] = useState<USER["email"]>("");
   const [password, setPassword] = useState<USER["password"]>("");
   const [role, setRole] = useState<string>(userRoles[0]);
-  const [notification, setNotification] = useState<string>("");
+
   const [errors, setErrors] = useState<{
     fullName?: string | boolean;
     email?: string | boolean;
     password?: string | boolean;
   }>({});
-  const navigate = useNavigate();
 
   const validateFullName = (fullName?: string) => {
     if (fullName && fullName.length < 3) {
@@ -73,6 +78,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const fullNameError = validateFullName(fullName);
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
@@ -94,7 +100,7 @@ const Register = () => {
         password,
         role,
       });
-      setNotification(data.message);
+      dispatch(setSnackBar({ message: data.message }));
       setTimeout(() => {
         navigate("/login");
       }, ANIMATION_DURATION);
@@ -102,11 +108,15 @@ const Register = () => {
       const { status } = err.response;
       const { message } = err.response.data;
       if (status === 400) {
-        setNotification(message);
+        dispatch(setSnackBar({ message }));
         return;
       }
-      setNotification(message);
+      dispatch(setSnackBar({ message }));
     }
+
+    setTimeout(() => {
+      dispatch(setSnackBar({ message: "" }));
+    }, snackBar.autoHideDuration);
   };
 
   return (
@@ -120,12 +130,6 @@ const Register = () => {
         justifyContent="center"
         p={2}
       >
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          open={!!notification}
-          message={notification}
-          autoHideDuration={ANIMATION_DURATION}
-        />
         <Typography
           color="primary"
           fontWeight="bold"
