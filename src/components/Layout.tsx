@@ -16,11 +16,15 @@ const Layout: React.FC = () => {
 
   return (
     <Container
-      className="min-h-screen"
       sx={{ display: "flex", flexDirection: "column" }}
+      maxWidth={false}
+      disableGutters
     >
       <LayoutHeader />
-      <Container component={"main"} sx={{ flexGrow: 1 }}>
+      <Container
+        component={"main"}
+        sx={{ flexGrow: 1, py: 3, marginTop: "72px" }}
+      >
         <Outlet />
       </Container>
     </Container>

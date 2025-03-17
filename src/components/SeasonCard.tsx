@@ -22,22 +22,17 @@ const SeasonCard: FC<SeasonCardProps> = ({
 }) => {
   return (
     <>
-      <Card raised {...restProps} style={{ minWidth: 200, borderRadius: 16 }}>
-        <CardHeader title={seasonName}></CardHeader>
-        <CardContent>
+      <Card raised {...restProps} style={{ minWidth: 200 }}>
+        <CardHeader sx={{ p: 4, pb: 0 }} title={seasonName}></CardHeader>
+        <CardContent sx={{ p: 4 }}>
           <Typography>{seasonGroups.length} groups</Typography>
           <Typography>{seasonParticipants?.length} participants</Typography>
         </CardContent>
-        <CardActions sx={{ justifyContent: "flex-end" }}>
-          <Button size="small" variant="contained" onClick={onEdit}>
+        <CardActions sx={{ justifyContent: "space-between", p: 4, gap: 4 }}>
+          <Button variant="contained" onClick={onEdit}>
             Edit
           </Button>
-          <Button
-            size="small"
-            variant="contained"
-            color="error"
-            onClick={onDelete}
-          >
+          <Button variant="contained" color="error" onClick={onDelete}>
             Delete
           </Button>
         </CardActions>

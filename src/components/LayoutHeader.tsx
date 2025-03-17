@@ -1,45 +1,62 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../context/auth/AuthContext";
-import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
-import { Box, Container, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { AuthContext } from "../context/auth/AuthContext";
+import { RootState } from "../redux/store";
+import Typography from "@mui/material/Typography";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LogoutIcon from "@mui/icons-material/Logout";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import { setDarkMode } from "../redux/slices/appSlice";
 
 const LayoutHeader: React.FC = () => {
+  const { darkMode } = useSelector((state: RootState) => state.appState);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleAddNewScore = () => {
-    console.log("Add logic for adding new score");
-  };
   const handleLogout = () => {
     authContext?.logout();
     navigate("/login");
   };
 
   return (
-    <Container
-      component="header"
+    <AppBar
+      position="fixed"
       sx={{
-        display: "flex",
+        flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        p: 2,
-        maxWidth: "100%",
+        py: 2,
+        px: 4,
+        display: "",
       }}
     >
-      <Typography variant="h3" color="primary" sx={{ fontWeight: "bold" }}>
-        Tennis Kragujevac
-      </Typography>
-      <Button variant="contained" onClick={handleAddNewScore}>
-        Add new score
-      </Button>
+      <Typography sx={{ fontWeight: "bold" }}>Tennis Kragujevac</Typography>
+
       <Box display={"flex"} alignItems={"center"} gap={2}>
         <Typography>{authContext?.user?.fullName}</Typography>
-        <Button variant="contained" onClick={handleLogout}>
-          Logout
-        </Button>
+        <Tooltip
+          title={darkMode ? "Get back to the light" : "Go to the dark side"}
+        >
+          <IconButton
+            onClick={() => dispatch(setDarkMode(darkMode ? false : true))}
+          >
+            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Logout">
+          <IconButton onClick={handleLogout}>
+            <LogoutIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
-    </Container>
+    </AppBar>
   );
 };
 

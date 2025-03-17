@@ -1,6 +1,7 @@
 import { SyntheticEvent, useEffect } from "react";
 import { deleteSeason, getSeasons, getUsers } from "../../api";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import SeasonDialog from "./SeasonDialog";
 import { SEASON } from "../../Types";
@@ -8,13 +9,30 @@ import SeasonCard from "../../components/SeasonCard";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsers } from "../../redux/slices/usersSlice";
 import { RootState } from "../../redux/store";
-import { setSeasons, selectSeason } from "../../redux/slices/seasonsSlice";
-import { setEditMode, setDialogState } from "../../redux/slices/appSlice";
+import {
+  setSeasons,
+  selectSeason,
+  selectedSeasonInitialData,
+} from "../../redux/slices/seasonsSlice";
+import {
+  setEditMode,
+  setDialogState,
+  setConfirmationDialogState,
+} from "../../redux/slices/appSlice";
+import ConfirmationDialog from "../../components/ConfirmationDialog";
 
 const AdminPage = () => {
   const dispatch = useDispatch();
-  const { seasons } = useSelector((state: RootState) => state.seasons);
+  const { seasons, selectedSeason } = useSelector(
+    (state: RootState) => state.seasons
+  );
+  const { confirmDialogOpened } = useSelector(
+    (state: RootState) => state.appState
+  );
 
+  /**
+   * Initial data fetch and send to store
+   */
   useEffect(() => {
     const initData = async () => {
       try {
@@ -45,46 +63,71 @@ const AdminPage = () => {
    * @param _e
    * @param cardData
    */
-  const handleSeasonCarDelete = async (
-    _e: SyntheticEvent,
-    cardData: SEASON
-  ) => {
+  const handleSeasonCardDelete = (_e: SyntheticEvent, cardData: SEASON) => {
+    dispatch(setConfirmationDialogState(true));
+    dispatch(selectSeason(cardData));
+  };
+
+  const handleConfirm = async () => {
     const tempSeasons = seasons.filter(
-      (season) => season.seasonId !== cardData.seasonId
+      (season) => season.seasonId !== selectedSeason.seasonId
     );
     dispatch(setSeasons(tempSeasons));
     try {
-      await deleteSeason(cardData.seasonId || "");
+      await deleteSeason(selectedSeason.seasonId || "");
+      dispatch(setConfirmationDialogState(false));
     } catch (err) {
       console.log(err);
     }
   };
 
+  /**
+   * Handler for adding match results TODO add logic
+   */
+  const handleAddNewScore = () => {
+    console.log("Add logic for adding new score");
+  };
+
   return (
     <>
-      <Stack direction="column" spacing={2} height={"calc(100vh - 88px)"} p={4}>
-        <Button
-          variant="outlined"
-          onClick={() => dispatch(setDialogState(true))}
-        >
-          Create new season
-        </Button>
+      <Stack direction="column" spacing={4}>
+        <Box gap={4} display={"flex"} justifyContent={"flex-end"}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => dispatch(setDialogState(true))}
+          >
+            Create new season
+          </Button>
+          <Button variant="contained" onClick={handleAddNewScore}>
+            Add new score
+          </Button>
+        </Box>
         <Stack direction={"row"} gap={2} flexWrap="wrap">
-          {seasons.length > 1 &&
-            seasons.map((season) => {
-              return (
-                <SeasonCard
-                  key={season.seasonId}
-                  seasonName={season.seasonName}
-                  seasonGroups={season.seasonGroups}
-                  seasonParticipants={season.seasonParticipants}
-                  onEdit={(e) => handleSeasonCardEdit(e, season)}
-                  onDelete={(e) => handleSeasonCarDelete(e, season)}
-                />
-              );
-            })}
+          {seasons.map((season) => {
+            return (
+              <SeasonCard
+                key={season.seasonId}
+                seasonName={season.seasonName}
+                seasonGroups={season.seasonGroups}
+                seasonParticipants={season.seasonParticipants}
+                onEdit={(e) => handleSeasonCardEdit(e, season)}
+                onDelete={(e) => handleSeasonCardDelete(e, season)}
+              />
+            );
+          })}
         </Stack>
         <SeasonDialog />
+        <ConfirmationDialog
+          open={confirmDialogOpened}
+          title={"Please confirm"}
+          message="Are you sure you want to delete?"
+          onClose={() => {
+            dispatch(setConfirmationDialogState(false));
+            dispatch(selectSeason(selectedSeasonInitialData));
+          }}
+          onOk={handleConfirm}
+        />
       </Stack>
     </>
   );
