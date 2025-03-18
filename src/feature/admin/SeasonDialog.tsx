@@ -111,7 +111,7 @@ const SeasonDialog = () => {
    * @param _event React.SyntheticEvent
    * @param newValue (_GROUP_TYPE | string)[]
    */
-  const handleSeasonGroupsOnChange = (
+  const handleGroupsOnChange = (
     _event: React.SyntheticEvent,
     newValue: (_GROUP_TYPE | string)[]
   ) => {
@@ -308,6 +308,8 @@ const SeasonDialog = () => {
     }
   };
 
+  console.log(seasonGroups, "steva");
+
   return (
     <Fragment>
       <Dialog
@@ -359,7 +361,7 @@ const SeasonDialog = () => {
                 multiple
                 freeSolo
                 value={groups}
-                onChange={handleSeasonGroupsOnChange}
+                onChange={handleGroupsOnChange}
                 inputValue={groupInputValue}
                 onInputChange={(_event, newInputValue) =>
                   setGroupInputValue(newInputValue)

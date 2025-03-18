@@ -14,6 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { setDarkMode } from "../redux/slices/appSlice";
 
+import Logo from "./logo.png";
+
 const LayoutHeader: React.FC = () => {
   const { darkMode } = useSelector((state: RootState) => state.appState);
   const authContext = useContext(AuthContext);
@@ -37,7 +39,14 @@ const LayoutHeader: React.FC = () => {
         display: "",
       }}
     >
-      <Typography sx={{ fontWeight: "bold" }}>Tennis Kragujevac</Typography>
+      <img
+        src={Logo}
+        alt="appLogo"
+        width={100}
+        height={40}
+        style={{ objectFit: "cover" }}
+      />
+      {/* <Typography sx={{ fontWeight: "bold" }}>Tennis Kragujevac</Typography> */}
 
       <Box display={"flex"} alignItems={"center"} gap={2}>
         <Typography>{authContext?.user?.fullName}</Typography>
