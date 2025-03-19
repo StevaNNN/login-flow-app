@@ -61,7 +61,7 @@ authRouter.post(
   "/register",
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const { userName, fullName, email, password, role } = req.body;
+      const { userName, fullName, email, password, role, photo } = req.body;
 
       if (!validator.isEmail(email)) {
         res.status(400).json({ message: "Invalid email address" });
@@ -99,6 +99,7 @@ authRouter.post(
         email,
         password: hashedPassword,
         role,
+        photo,
       });
       await newUser.save();
       res.status(201).json({ message: "User registered successfully" });

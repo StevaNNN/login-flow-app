@@ -35,7 +35,7 @@ import Slide from "@mui/material/Slide";
 const SeasonDialog = () => {
   const dispatch = useDispatch();
 
-  const { dialogOpened, editMode, snackBar } = useSelector(
+  const { dialogOpened, editMode } = useSelector(
     (state: RootState) => state.appState
   );
   const { users } = useSelector((state: RootState) => state.users);
@@ -179,9 +179,7 @@ const SeasonDialog = () => {
           dispatch(setSnackBar({ message: err.message }));
       }
     }
-    setTimeout(() => {
-      dispatch(setSnackBar({ message: "" }));
-    }, snackBar.autoHideDuration);
+
     resetForm();
   };
 

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { RootState } from "../../redux/store";
@@ -9,21 +10,21 @@ import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import { updateUserData, uploadPicture } from "../../api";
-import {
-  setUserData,
-  setUserEmail,
-  setUserFullName,
-  setUserName,
-} from "../../redux/slices/playerSlice";
+import { setUserData } from "../../redux/slices/playerSlice";
 
 import { setSnackBar } from "../../redux/slices/appSlice";
 
 const PlayerPage = () => {
   // const { seasons } = useSelector((state: RootState) => state.seasons);
+  // const { seasons: playerSeasons } = useSelector((state: RootState) => state.player);
   // const userId = userData?._id;
+
   const dispatch = useDispatch();
   const { userData } = useSelector((state: RootState) => state.player);
-  const { snackBar } = useSelector((state: RootState) => state.appState);
+  const fullNameRef = useRef<HTMLInputElement>(null);
+  const userNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+
   // const getUserSeasons = useCallback(() => {
   //   const userSeasons: typeof seasons = [];
   //   seasons.forEach((season) => {
@@ -59,18 +60,21 @@ const PlayerPage = () => {
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const _userData = { ...userData };
+    if (fullNameRef.current || userNameRef.current || emailRef.current) {
+      _userData.fullName = fullNameRef.current?.value;
+      _userData.userName = userNameRef.current?.value;
+      _userData.email = emailRef.current?.value;
+    }
     try {
-      const req = await updateUserData(userData);
+      const req = await updateUserData({ ...userData, ..._userData });
+      dispatch(setUserData(_userData));
       dispatch(setSnackBar({ message: req.data.message }));
     } catch (err) {
       if (err instanceof Error) {
         dispatch(setSnackBar({ message: err.message }));
       }
     }
-    setTimeout(() => {
-      dispatch(setSnackBar({ message: "" }));
-    }, snackBar.autoHideDuration);
   };
 
   /**
@@ -120,30 +124,30 @@ const PlayerPage = () => {
             <TextField
               type="text"
               id="fullName"
-              onChange={(e) => dispatch(setUserFullName(e.target.value))}
               label="Full name"
               placeholder="Full Name"
-              value={userData.fullName}
+              defaultValue={userData.fullName}
+              inputRef={fullNameRef}
             />
           </FormControl>
           <FormControl>
             <TextField
               type="text"
               id="userName"
-              onChange={(e) => dispatch(setUserName(e.target.value))}
               label="User name"
               placeholder="User name"
-              value={userData.userName}
+              defaultValue={userData.userName}
+              inputRef={userNameRef}
             />
           </FormControl>
           <FormControl>
             <TextField
               type="email"
-              onChange={(e) => dispatch(setUserEmail(e.target.value))}
               label="Email"
               id="email"
               placeholder="Email"
-              value={userData.email}
+              defaultValue={userData.email}
+              inputRef={emailRef}
             />
           </FormControl>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>

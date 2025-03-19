@@ -22,6 +22,8 @@ interface ProfilePictureHolderProps {
 
 interface PROFILE_PHOTO_UPLOAD_PROPS {
   propHandleUpload: (uploadedImage: File | null) => void;
+  btnText?: string;
+  tempImg?: string;
 }
 
 const ProfilePictureHolder = styled(Box, {
@@ -46,6 +48,8 @@ const ProfilePictureHolder = styled(Box, {
 
 const ProfilePhotoUpload: FC<PROFILE_PHOTO_UPLOAD_PROPS> = ({
   propHandleUpload,
+  btnText = "Upload profile picture",
+  tempImg,
 }) => {
   const userData = useSelector((state: RootState) => state.player.userData);
   const [image, setImage] = useState<File | null>(null);
@@ -69,7 +73,7 @@ const ProfilePhotoUpload: FC<PROFILE_PHOTO_UPLOAD_PROPS> = ({
         justifyContent={"center"}
         alignItems={"center"}
       >
-        <img src={userData.photo} alt={"profilePicture"} />
+        <img src={tempImg || userData.photo} alt={"profilePicture"} />
       </ProfilePictureHolder>
       <Button
         component="label"
@@ -79,7 +83,7 @@ const ProfilePhotoUpload: FC<PROFILE_PHOTO_UPLOAD_PROPS> = ({
         startIcon={<CloudUploadIcon />}
         onClick={handleUpload}
       >
-        Upload profile Picture
+        {btnText}
         <VisuallyHiddenInput
           type="file"
           onChange={handleFileChange}

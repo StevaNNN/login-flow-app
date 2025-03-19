@@ -1,7 +1,7 @@
 import { SyntheticEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { USER } from "../../Types";
-import { registerUser } from "../../api";
+import { registerUser, uploadPicture } from "../../api";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -14,6 +14,7 @@ import { setSnackBar } from "../../redux/slices/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { userRoles } from "../../util";
+import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
 
 const ANIMATION_DURATION = 3000;
 
@@ -27,6 +28,7 @@ const Register = () => {
   const [email, setEmail] = useState<USER["email"]>("");
   const [password, setPassword] = useState<USER["password"]>("");
   const [role, setRole] = useState<string>(userRoles[0]);
+  const [photo, setPhoto] = useState<USER["photo"]>();
 
   const [errors, setErrors] = useState<{
     fullName?: string | boolean;
@@ -99,6 +101,7 @@ const Register = () => {
         email,
         password,
         role,
+        photo,
       });
       dispatch(setSnackBar({ message: data.message }));
       setTimeout(() => {
@@ -113,11 +116,26 @@ const Register = () => {
       }
       dispatch(setSnackBar({ message }));
     }
-
-    setTimeout(() => {
-      dispatch(setSnackBar({ message: "" }));
-    }, snackBar.autoHideDuration);
   };
+
+  const updateProfilePicture = async (uploadedImage: File | null) => {
+    if (!uploadedImage) return;
+
+    const formData = new FormData();
+    formData.append("image", uploadedImage);
+
+    try {
+      const response = await uploadPicture(formData);
+      setPhoto(response.data.imageUrl);
+      dispatch(setSnackBar({ message: response.data.message }));
+    } catch (error) {
+      if (error instanceof Error) {
+        dispatch(setSnackBar({ message: error.message }));
+      }
+    }
+  };
+
+  console.log(photo);
 
   return (
     <>
@@ -145,6 +163,10 @@ const Register = () => {
           spacing={2}
           direction="column"
         >
+          <ProfilePhotoUpload
+            propHandleUpload={updateProfilePicture}
+            tempImg={photo}
+          />
           <FormControl>
             <TextField
               type="text"

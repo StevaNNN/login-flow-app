@@ -1,15 +1,13 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./Routes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Snackbar from "@mui/material/Snackbar";
 import { CssBaseline } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
+import CustomSnackBar from "./components/CustomSnackBar";
 
 const App = () => {
-  const { darkMode, snackBar } = useSelector(
-    (state: RootState) => state.appState
-  );
+  const { darkMode } = useSelector((state: RootState) => state.appState);
 
   const theme = createTheme({
     shape: {
@@ -46,8 +44,9 @@ const App = () => {
       MuiTextField: {
         defaultProps: {
           slotProps: {
+            input: {},
             inputLabel: {
-              disableAnimation: true,
+              shrink: true,
             },
           },
         },
@@ -59,7 +58,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RouterProvider router={router} />
-      <Snackbar {...snackBar} />
+      <CustomSnackBar />
     </ThemeProvider>
   );
 };
