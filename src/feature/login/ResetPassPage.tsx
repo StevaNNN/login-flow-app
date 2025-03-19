@@ -46,7 +46,7 @@ const ResetPasswordPage = () => {
         color="primary"
         fontWeight="bold"
         align="center"
-        variant={"h2"}
+        variant={"h3"}
       >
         Reset Password
       </Typography>

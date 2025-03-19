@@ -1,5 +1,5 @@
 import { SyntheticEvent, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { USER } from "../../Types";
@@ -16,12 +16,14 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
+import { RootState } from "../../redux/store";
 
 const ANIMATION_DURATION = 3000;
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const darkMode = useSelector((state: RootState) => state.appState.darkMode);
 
   const [userName, setUserName] = useState<USER["userName"]>("");
   const [fullName, setFullName] = useState<USER["fullName"]>("");
@@ -102,6 +104,7 @@ const Register = () => {
         password,
         role,
         photo,
+        darkMode,
       });
       dispatch(setSnackBar({ message: data.message }));
       setTimeout(() => {
@@ -152,7 +155,7 @@ const Register = () => {
           color="primary"
           fontWeight="bold"
           align="center"
-          variant={"h2"}
+          variant={"h3"}
         >
           Register user
         </Typography>

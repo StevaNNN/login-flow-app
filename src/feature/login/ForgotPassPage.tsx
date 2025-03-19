@@ -38,7 +38,7 @@ const ForgotPasswordPage = () => {
         color="primary"
         fontWeight="bold"
         align="center"
-        variant={"h2"}
+        variant={"h3"}
       >
         Forgot password
       </Typography>

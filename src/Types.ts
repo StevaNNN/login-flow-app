@@ -8,6 +8,7 @@ export interface USER {
   photo?: string;
   birthDate?: string;
   role: "admin" | "player" | string;
+  darkMode?: boolean;
   _id: string;
   _v?: number;
 }
