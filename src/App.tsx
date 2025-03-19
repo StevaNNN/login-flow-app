@@ -46,7 +46,6 @@ const App = () => {
       MuiTextField: {
         defaultProps: {
           slotProps: {
-            input: {},
             inputLabel: {
               shrink: true,
             },
