@@ -13,8 +13,8 @@ import InputLabel from "@mui/material/InputLabel";
 import { setSnackBar } from "../../redux/slices/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { userRoles } from "../../util";
 
-const userRoles = ["player", "admin"];
 const ANIMATION_DURATION = 3000;
 
 const Register = () => {

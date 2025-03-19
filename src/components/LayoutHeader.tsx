@@ -18,6 +18,7 @@ import Logo from "./logo.png";
 
 const LayoutHeader: React.FC = () => {
   const { darkMode } = useSelector((state: RootState) => state.appState);
+  const userData = useSelector((state: RootState) => state.player.userData);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,10 +47,9 @@ const LayoutHeader: React.FC = () => {
         height={40}
         style={{ objectFit: "cover" }}
       />
-      {/* <Typography sx={{ fontWeight: "bold" }}>Tennis Kragujevac</Typography> */}
 
       <Box display={"flex"} alignItems={"center"} gap={2}>
-        <Typography>{authContext?.user?.fullName}</Typography>
+        <Typography>{userData?.fullName}</Typography>
         <Tooltip
           title={darkMode ? "Get back to the light" : "Go to the dark side"}
         >

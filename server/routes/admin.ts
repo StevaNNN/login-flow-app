@@ -21,6 +21,7 @@ adminRouter.get(
   }
 );
 
+// Delete user
 adminRouter.post(
   "/deleteUser",
   async (req: Request, res: Response): Promise<void> => {
@@ -45,6 +46,7 @@ adminRouter.post(
   }
 );
 
+// Get all seasons
 adminRouter.get(
   "/seasons",
   async (_req: Request, res: Response): Promise<void> => {
@@ -60,6 +62,7 @@ adminRouter.get(
   }
 );
 
+// Add new season
 adminRouter.post(
   "/addSeason",
   async (req: Request, res: Response): Promise<void> => {
@@ -88,6 +91,7 @@ adminRouter.post(
   }
 );
 
+// Edit season
 adminRouter.put(
   "/editSeason",
   async (req: Request, res: Response): Promise<void> => {
@@ -120,6 +124,7 @@ adminRouter.put(
   }
 );
 
+// Delete season
 adminRouter.delete(
   "/deleteSeason",
   async (req: Request, res: Response): Promise<void> => {

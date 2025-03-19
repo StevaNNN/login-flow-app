@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth";
 import { adminRouter } from "./routes/admin";
+import { playerRouter } from "./routes/player";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/player", playerRouter);
 
 // Connect to MongoDB
 mongoose

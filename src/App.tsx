@@ -43,10 +43,17 @@ const App = () => {
           }),
         },
       },
+      MuiTextField: {
+        defaultProps: {
+          slotProps: {
+            inputLabel: {
+              disableAnimation: true,
+            },
+          },
+        },
+      },
     },
   });
-
-  console.log(snackBar);
 
   return (
     <ThemeProvider theme={theme}>

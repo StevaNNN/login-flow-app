@@ -1,18 +1,21 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import LayoutHeader from "./LayoutHeader";
-import { AuthContext } from "../context/auth/AuthContext";
+
 import { Container } from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
-  const authCtx = useContext(AuthContext);
-  const { role } = authCtx?.user || {};
+  const userData = useSelector((state: RootState) => state.player.userData);
 
   useEffect(() => {
-    if (role === "admin") navigate("/admin");
-    if (role === "player") navigate("/player");
-  }, [navigate, role]);
+    if (userData) {
+      if (userData.role === "admin") navigate("/admin");
+      if (userData.role === "player") navigate("/player");
+    }
+  }, [navigate, userData]);
 
   return (
     <Container

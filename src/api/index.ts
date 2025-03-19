@@ -61,4 +61,11 @@ export const editSeason = (data: SEASON) => API.put("/admin/editSeason", data);
 export const deleteSeason = (seasonId: string) =>
   API.delete(`/admin/deleteSeason?seasonId=${seasonId}`);
 /////////////////////////////////////////////////////////////////////////////////////////
+
+export const uploadPicture = (data: FormData) =>
+  API.post("/player/uploadPicture", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+export const updateUserData = (data: USER) =>
+  API.post("/player/updateUserInfo", data);
 export default API;

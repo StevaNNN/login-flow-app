@@ -308,8 +308,6 @@ const SeasonDialog = () => {
     }
   };
 
-  console.log(seasonGroups, "steva");
-
   return (
     <Fragment>
       <Dialog

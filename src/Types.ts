@@ -7,7 +7,7 @@ export interface USER {
   updatedAt?: string;
   photo?: string;
   birthDate?: string;
-  role: "admin" | "user" | string;
+  role: "admin" | "player" | string;
   _id: string;
   _v?: number;
 }

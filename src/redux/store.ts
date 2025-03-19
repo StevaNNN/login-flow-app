@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import usersReducer from "./slices/usersSlice";
 import seasonsReducer from "./slices/seasonsSlice";
+import playerReducer from "./slices/playerSlice";
 import appReducer from "./slices/appSlice";
 
 export const store = configureStore({
@@ -8,6 +9,7 @@ export const store = configureStore({
     appState: appReducer,
     users: usersReducer,
     seasons: seasonsReducer,
+    player: playerReducer,
   },
 });
 

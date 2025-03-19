@@ -1,21 +1,22 @@
 import { useState, ReactNode, useEffect } from "react";
-import { USER } from "../../Types";
 import { getUser, logoutUser } from "../../api";
 import { AuthContext } from "./AuthContext";
+import { useDispatch } from "react-redux";
+import { initialState, setUserData } from "../../redux/slices/playerSlice";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<USER | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean>(() => {
     const storedLoggedIn = localStorage.getItem("loggedIn");
     return storedLoggedIn ? JSON.parse(storedLoggedIn) : false;
   });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     try {
       const fetchUser = async () => {
         const { data } = await getUser();
         setLoggedIn(true);
-        setUser(data);
+        dispatch(setUserData(data));
       };
       if (loggedIn) fetchUser();
     } catch (err) {
@@ -23,13 +24,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("loggedIn");
       setLoggedIn(false);
     }
-  }, [loggedIn]);
+  }, [dispatch, loggedIn]);
 
   const login = async () => {
     setLoggedIn(true);
     try {
       const { data } = await getUser();
-      setUser(data);
+      dispatch(setUserData(data));
       localStorage.setItem("loggedIn", JSON.stringify(true));
     } catch (err) {
       if (err instanceof Error) console.log(err.message);
@@ -40,11 +41,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoggedIn(false);
     localStorage.removeItem("loggedIn");
     logoutUser();
-    setUser(null);
+    dispatch(setUserData(initialState.userData));
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loggedIn }}>
+    <AuthContext.Provider value={{ login, logout, loggedIn }}>
       {children}
     </AuthContext.Provider>
   );
