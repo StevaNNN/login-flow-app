@@ -1,8 +1,10 @@
 import React, { FC, useState } from "react";
-import { Box, Button, FormControl, styled } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+
+import { Box, Button, FormControl, styled } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

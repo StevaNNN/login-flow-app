@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
-import Snackbar, { SnackbarProps } from "@mui/material/Snackbar";
 import { useDispatch, useSelector } from "react-redux";
+
 import { RootState } from "../redux/store";
 import { setSnackBar } from "../redux/slices/appSlice";
+
+import Snackbar, { SnackbarProps } from "@mui/material/Snackbar";
 
 const CustomSnackBar: React.FC<SnackbarProps> = () => {
   const dispatch = useDispatch();

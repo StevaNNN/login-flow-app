@@ -1,18 +1,19 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 import { AuthContext } from "../context/auth/AuthContext";
 import { RootState } from "../redux/store";
-import Typography from "@mui/material/Typography";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
+import { setDarkMode } from "../redux/slices/appSlice";
 
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LogoutIcon from "@mui/icons-material/Logout";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { setDarkMode } from "../redux/slices/appSlice";
+import Typography from "@mui/material/Typography";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
 
 import Logo from "./logo.png";
 

@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import LayoutHeader from "./LayoutHeader";
+import { RootState } from "../redux/store";
 
 import { Container } from "@mui/material";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();

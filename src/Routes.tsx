@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPasswordPage from "./feature/login/ForgotPassPage";

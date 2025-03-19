@@ -1,7 +1,13 @@
 import { SyntheticEvent, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 import { USER } from "../../Types";
 import { registerUser, uploadPicture } from "../../api";
+import { setSnackBar } from "../../redux/slices/appSlice";
+import { userRoles } from "../../util";
+import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
+
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -10,18 +16,12 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
-import { setSnackBar } from "../../redux/slices/appSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { userRoles } from "../../util";
-import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
 
 const ANIMATION_DURATION = 3000;
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { snackBar } = useSelector((state: RootState) => state.appState);
 
   const [userName, setUserName] = useState<USER["userName"]>("");
   const [fullName, setFullName] = useState<USER["fullName"]>("");

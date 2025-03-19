@@ -1,11 +1,13 @@
 import { FC, SyntheticEvent } from "react";
-import Typography from "@mui/material/Typography";
-import Card, { CardProps } from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
+
 import { SEASON } from "../Types";
+
 import Button from "@mui/material/Button";
 import CardActions from "@mui/material/CardActions";
 import CardHeader from "@mui/material/CardHeader";
+import Typography from "@mui/material/Typography";
+import Card, { CardProps } from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 
 interface SeasonCardProps extends SEASON, CardProps {
   onEdit: (event: SyntheticEvent) => void;

@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+
+import { setSnackBar } from "../../redux/slices/appSlice";
 import { resetPassword } from "../../api";
+
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { useDispatch } from "react-redux";
-import { setSnackBar } from "../../redux/slices/appSlice";
 
 const ResetPasswordPage = () => {
   const dispatch = useDispatch();

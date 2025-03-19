@@ -1,10 +1,12 @@
 import { RouterProvider } from "react-router-dom";
-import { router } from "./Routes";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
 import { useSelector } from "react-redux";
+
+import { router } from "./Routes";
 import { RootState } from "./redux/store";
 import CustomSnackBar from "./components/CustomSnackBar";
+
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
 
 const App = () => {
   const { darkMode } = useSelector((state: RootState) => state.appState);

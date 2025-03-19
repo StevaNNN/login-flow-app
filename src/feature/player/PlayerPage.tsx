@@ -3,16 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { RootState } from "../../redux/store";
 import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
+import { updateUserData, uploadPicture } from "../../api";
+import { setUserData } from "../../redux/slices/playerSlice";
+import { setSnackBar } from "../../redux/slices/appSlice";
 
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
-import { updateUserData, uploadPicture } from "../../api";
-import { setUserData } from "../../redux/slices/playerSlice";
-
-import { setSnackBar } from "../../redux/slices/appSlice";
 
 const PlayerPage = () => {
   // const { seasons } = useSelector((state: RootState) => state.seasons);
