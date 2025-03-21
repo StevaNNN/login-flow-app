@@ -4,6 +4,7 @@ import {
   FormEvent,
   SyntheticEvent,
   useEffect,
+  useMemo,
 } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +18,7 @@ import {
 } from "../../redux/slices/appSlice";
 import {
   selectedSeasonInitialData,
-  selectSeason,
+  setSelectedSeason,
   setSeasons,
 } from "../../redux/slices/seasonsSlice";
 
@@ -43,13 +44,6 @@ const SeasonDialog = () => {
     (state: RootState) => state.seasons
   );
 
-  const {
-    seasonId,
-    seasonName: _seasonName,
-    seasonGroups: _seasonGroups,
-    seasonParticipants: _seasonParticipants,
-  } = selectedSeason;
-
   const [nextTick, setNextTick] = useState(0);
   const [participantInputValue, setParticipantInputValue] =
     useState<string>("");
@@ -68,19 +62,21 @@ const SeasonDialog = () => {
    */
   useEffect(() => {
     if (editMode) {
-      setSeasonName(_seasonName);
-      setSeasonGroups(_seasonGroups);
-      setSeasonParticipants(_seasonParticipants);
-      const initialSeasonGroups = _seasonGroups.map((sg) => sg.group);
+      setSeasonName(selectedSeason.seasonName);
+      setSeasonGroups(selectedSeason.seasonGroups);
+      setSeasonParticipants(selectedSeason.seasonParticipants);
+      const initialSeasonGroups = selectedSeason.seasonGroups.map(
+        (sg) => sg.group
+      );
       setGroups(initialSeasonGroups);
     }
-  }, [_seasonGroups, _seasonName, _seasonParticipants, editMode]);
+  }, [editMode, selectedSeason]);
 
   /**
    * Parser for participants autocomplete field where we assign users to the season
    * @returns {label: string, id: string, selected: boolean}
    */
-  const parseUsersToOptions = () => {
+  const parseUsersToOptions = useMemo(() => {
     return users.map((user) => {
       return {
         label: user.fullName,
@@ -88,7 +84,7 @@ const SeasonDialog = () => {
         selected: false,
       };
     });
-  };
+  }, [users]);
 
   /**
    * Handler for participants autocomplete field on first slide
@@ -115,6 +111,9 @@ const SeasonDialog = () => {
     _event: React.SyntheticEvent,
     newValue: (_GROUP_TYPE | string)[]
   ) => {
+    if (newValue.length < 1) {
+      setSeasonGroups([]);
+    }
     const updatedSeasonGroups = newValue.map((item) => {
       if (typeof item === "string") {
         return { label: item, id: crypto.randomUUID(), selected: true };
@@ -140,7 +139,7 @@ const SeasonDialog = () => {
     if (nextTick === 0) return;
 
     const season = {
-      seasonId: seasonId || crypto.randomUUID(),
+      seasonId: selectedSeason.seasonId || crypto.randomUUID(),
       seasonName,
       seasonParticipants,
       seasonGroups,
@@ -214,13 +213,9 @@ const SeasonDialog = () => {
       (group) => group.group.id === seasonGroup.id
     )?.participants;
 
-    const pickedIds = seasonGroups
-      .map((sG) =>
-        sG.participants.map((sP) => {
-          return sP.id;
-        })
-      )
-      .flat();
+    const pickedIds = seasonGroups.flatMap((sG) =>
+      sG.participants.map((sP) => sP.id)
+    );
 
     const nonPickedSeasonParticipants = seasonParticipants.filter(
       (sp) => !pickedIds.includes(sp.id)
@@ -260,7 +255,7 @@ const SeasonDialog = () => {
           return { group, participants: [] };
         });
         setSeasonGroups((prevState) => [...prevState, ...editedBlankGroups]);
-      } else if (groups.length < seasonGroups.length) {
+      } else if (groups.length <= seasonGroups.length) {
         // Case where we try to edit seazon and delete couple groups
         const groupsIdsArray: string[] = [];
         for (let j = 0; j < groups.length; j++) {
@@ -279,7 +274,6 @@ const SeasonDialog = () => {
       setNextTick(0);
     }
   };
-
   /**
    * Reseting form inputs
    */
@@ -292,7 +286,7 @@ const SeasonDialog = () => {
     setNextTick(0);
     dispatch(setDialogState(false));
     dispatch(setEditMode(false));
-    dispatch(selectSeason(selectedSeasonInitialData));
+    dispatch(setSelectedSeason(selectedSeasonInitialData));
   };
 
   /**
@@ -332,10 +326,7 @@ const SeasonDialog = () => {
           <DialogTitle>Assign Players to each group</DialogTitle>
         )}
 
-        <DialogContent
-          dividers
-          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-        >
+        <DialogContent>
           <Slide
             appear={false}
             direction="right"
@@ -384,7 +375,7 @@ const SeasonDialog = () => {
                 onInputChange={(_event, newInputValue) => {
                   setParticipantInputValue(newInputValue);
                 }}
-                options={parseUsersToOptions()}
+                options={parseUsersToOptions}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                   <TextField {...params} label="Participants" />

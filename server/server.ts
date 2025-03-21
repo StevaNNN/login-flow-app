@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth";
 import { adminRouter } from "./routes/admin";
 import { playerRouter } from "./routes/player";
+import { sharedRouter } from "./routes/shared";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/player", playerRouter);
+app.use("/api", sharedRouter);
 
 // Connect to MongoDB
 mongoose

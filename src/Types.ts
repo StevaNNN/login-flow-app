@@ -54,3 +54,32 @@ export interface SEASON {
   seasonGroups: GROUP_TYPE[];
   createdAt?: Date;
 }
+
+export type MATCH_TYPE = {
+  seasonName: string;
+  seasonGroup: {
+    label: string;
+    id?: string;
+    selected: boolean;
+  };
+  player1: {
+    label: string;
+    id: string;
+    selected: boolean;
+  };
+  player1set1?: string;
+  player1tiebreak1?: string;
+  player1set2?: string;
+  player1tiebreak2?: string;
+  player1set3?: string;
+  player2: {
+    label: string;
+    id: string;
+    selected: boolean;
+  };
+  player2set1?: string;
+  player2tiebreak1?: string;
+  player2set2?: string;
+  player2tiebreak2?: string;
+  player2set3?: string;
+};

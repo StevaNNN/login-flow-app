@@ -1,5 +1,5 @@
-import { SyntheticEvent, useEffect } from "react";
-import { deleteSeason, getSeasons, getUsers } from "../../api";
+import { SyntheticEvent } from "react";
+import { deleteSeason } from "../../api";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -7,11 +7,10 @@ import SeasonDialog from "./SeasonDialog";
 import { SEASON } from "../../Types";
 import SeasonCard from "../../components/SeasonCard";
 import { useDispatch, useSelector } from "react-redux";
-import { setUsers } from "../../redux/slices/usersSlice";
 import { RootState } from "../../redux/store";
 import {
   setSeasons,
-  selectSeason,
+  setSelectedSeason,
   selectedSeasonInitialData,
 } from "../../redux/slices/seasonsSlice";
 import {
@@ -31,23 +30,6 @@ const AdminPage = () => {
   );
 
   /**
-   * Initial data fetch and send to store
-   */
-  useEffect(() => {
-    const initData = async () => {
-      try {
-        const userResponse = await getUsers();
-        const seasonResponse = await getSeasons();
-        dispatch(setUsers(userResponse.data));
-        dispatch(setSeasons(seasonResponse.data));
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    initData();
-  }, [dispatch]);
-
-  /**
    * Selects the clicked season and pass data to the SeasonDialog for edits
    * @param _e
    * @param cardData
@@ -55,7 +37,7 @@ const AdminPage = () => {
   const handleSeasonCardEdit = (_e: SyntheticEvent, cardData: SEASON) => {
     dispatch(setDialogState(true));
     dispatch(setEditMode(true));
-    dispatch(selectSeason(cardData));
+    dispatch(setSelectedSeason(cardData));
   };
 
   /**
@@ -65,9 +47,12 @@ const AdminPage = () => {
    */
   const handleSeasonCardDelete = (_e: SyntheticEvent, cardData: SEASON) => {
     dispatch(setConfirmationDialogState(true));
-    dispatch(selectSeason(cardData));
+    dispatch(setSelectedSeason(cardData));
   };
 
+  /**
+   * Handle confirm action on dialog when deleting season
+   */
   const handleConfirm = async () => {
     const tempSeasons = seasons.filter(
       (season) => season.seasonId !== selectedSeason.seasonId
@@ -81,13 +66,6 @@ const AdminPage = () => {
     }
   };
 
-  /**
-   * Handler for adding match results TODO add logic
-   */
-  const handleAddNewScore = () => {
-    console.log("Add logic for adding new score");
-  };
-
   return (
     <>
       <Stack direction="column" spacing={4}>
@@ -98,9 +76,6 @@ const AdminPage = () => {
             onClick={() => dispatch(setDialogState(true))}
           >
             Create new season
-          </Button>
-          <Button variant="contained" onClick={handleAddNewScore}>
-            Add new score
           </Button>
         </Box>
         <Stack direction={"row"} gap={2} flexWrap="wrap">
@@ -124,7 +99,7 @@ const AdminPage = () => {
           message="Are you sure you want to delete?"
           onClose={() => {
             dispatch(setConfirmationDialogState(false));
-            dispatch(selectSeason(selectedSeasonInitialData));
+            dispatch(setSelectedSeason(selectedSeasonInitialData));
           }}
           onOk={handleConfirm}
         />

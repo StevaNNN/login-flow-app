@@ -46,22 +46,6 @@ adminRouter.post(
   }
 );
 
-// Get all seasons
-adminRouter.get(
-  "/seasons",
-  async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const seasons = await Season.find();
-      res.json(seasons);
-    } catch (err) {
-      if (err instanceof Error)
-        res
-          .status(500)
-          .json({ error: `Internal Server Error: ${err.message}` });
-    }
-  }
-);
-
 // Add new season
 adminRouter.post(
   "/addSeason",

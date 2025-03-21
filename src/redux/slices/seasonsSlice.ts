@@ -25,7 +25,7 @@ export const seasonsSlice = createSlice({
     setSeasons: (state, action: PayloadAction<SEASONS_STATE["seasons"]>) => {
       state.seasons = action.payload;
     },
-    selectSeason: (
+    setSelectedSeason: (
       state,
       action: PayloadAction<SEASONS_STATE["selectedSeason"]>
     ) => {
@@ -35,6 +35,6 @@ export const seasonsSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setSeasons, selectSeason } = seasonsSlice.actions;
+export const { setSeasons, setSelectedSeason } = seasonsSlice.actions;
 
 export default seasonsSlice.reducer;

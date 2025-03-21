@@ -25,7 +25,7 @@ const ConfirmationDialog = (props: ConfirmationDialogRawProps) => {
       {...props}
     >
       <DialogTitle>{title}</DialogTitle>
-      <DialogContent dividers>{message}</DialogContent>
+      <DialogContent>{message}</DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleClose}>
           Cancel

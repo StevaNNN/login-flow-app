@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SEASON, USER } from "../Types";
+import { MATCH_TYPE, SEASON, USER } from "../Types";
 // import { useContext } from "react";
 // import { AuthContext } from "../context/auth/AuthContext";
 
@@ -56,16 +56,24 @@ export const deleteUser = (email: string) =>
   API.post("/admin/deleteUser", { email });
 
 export const addSeason = (data: SEASON) => API.post("/admin/addSeason", data);
-export const getSeasons = () => API.get("/admin/seasons");
 export const editSeason = (data: SEASON) => API.put("/admin/editSeason", data);
 export const deleteSeason = (seasonId: string) =>
   API.delete(`/admin/deleteSeason?seasonId=${seasonId}`);
 /////////////////////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////PLAYER///////////////////////////////////////////////
 export const uploadPicture = (data: FormData) =>
   API.post("/player/uploadPicture", data, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 export const updateUserData = (data: USER) =>
   API.post("/player/updateUserInfo", data);
+/////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////SHARED///////////////////////////////////////////////
+export const getSeasons = () => API.get("/seasons");
+export const addMatch = (data: MATCH_TYPE) => API.post("/addMatch", data);
+export const getMatches = () => API.post("/getMatches");
+/////////////////////////////////////////////////////////////////////////////////////////
+
 export default API;
