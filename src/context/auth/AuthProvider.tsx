@@ -1,4 +1,4 @@
-import { useState, ReactNode, useEffect } from "react";
+import { useState, ReactNode, useEffect, useCallback } from "react";
 import { getUser, logoutUser } from "../../api";
 import { AuthContext } from "./AuthContext";
 import { useDispatch } from "react-redux";
@@ -26,6 +26,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [dispatch, loggedIn]);
 
+  const logout = useCallback(() => {
+    setLoggedIn(false);
+    localStorage.removeItem("loggedIn");
+    logoutUser();
+    dispatch(setUserData(initialState.userData));
+  }, [dispatch]);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const resetTimeout = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        logout();
+      }, 720000); // 20m seconds
+    };
+
+    const handleActivity = () => {
+      resetTimeout();
+    };
+
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("keydown", handleActivity);
+
+    resetTimeout();
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+    };
+  }, [logout]);
+
   const login = async () => {
     setLoggedIn(true);
     try {
@@ -35,13 +68,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       if (err instanceof Error) console.log(err.message);
     }
-  };
-
-  const logout = () => {
-    setLoggedIn(false);
-    localStorage.removeItem("loggedIn");
-    logoutUser();
-    dispatch(setUserData(initialState.userData));
   };
 
   return (
