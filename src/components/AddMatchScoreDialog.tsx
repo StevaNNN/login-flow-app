@@ -127,7 +127,7 @@ const AddMatchScoreDialog: FC<ADD_MATCH_SCORE_DIALOG_PROPS> = ({
    * Parsing selected season groups to array for autocomplete field
    */
   const parsedSelectedSeasonGroupsToOptions = useMemo(() => {
-    return selectedSeason?.seasonGroups.map((sG) => {
+    return selectedSeason?.seasonGroups?.map((sG) => {
       return {
         label: sG.group.label,
         id: sG.group.id,
@@ -141,8 +141,8 @@ const AddMatchScoreDialog: FC<ADD_MATCH_SCORE_DIALOG_PROPS> = ({
    */
   const parsedSelectedSeasonGroupParticipantsToOptions = useMemo(() => {
     return selectedSeason?.seasonGroups
-      .filter((sG) => sG.group.id === pickedGroup.id)
-      .flatMap((sG) => {
+      ?.filter((sG) => sG.group.id === pickedGroup.id)
+      ?.flatMap((sG) => {
         return sG.participants.map((p) => {
           return {
             label: p.label,
@@ -151,7 +151,7 @@ const AddMatchScoreDialog: FC<ADD_MATCH_SCORE_DIALOG_PROPS> = ({
           };
         });
       })
-      .filter((s) => ![player1.id, player2.id].includes(s.id));
+      ?.filter((s) => ![player1.id, player2.id].includes(s.id));
   }, [pickedGroup, selectedSeason, player1, player2]);
 
   /**
@@ -320,8 +320,16 @@ const AddMatchScoreDialog: FC<ADD_MATCH_SCORE_DIALOG_PROPS> = ({
       };
       if (newResultSubmit) newResultSubmit(e, dataToSend);
       resetForm();
+      localHandleClose();
     },
-    [newResultSubmit, pickedGroup, player1, player2, selectedSeason]
+    [
+      localHandleClose,
+      newResultSubmit,
+      pickedGroup,
+      player1,
+      player2,
+      selectedSeason?.seasonName,
+    ]
   );
 
   return (

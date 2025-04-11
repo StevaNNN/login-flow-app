@@ -1,10 +1,9 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import LayoutHeader from "./LayoutHeader";
 import { addMatch } from "../api";
-import { RootState } from "../redux/store";
 import AddMatchScoreDialog from "./AddMatchScoreDialog";
 import { setSnackBar } from "../redux/slices/appSlice";
 import { MATCH_TYPE } from "../Types";
@@ -12,19 +11,13 @@ import { MATCH_TYPE } from "../Types";
 import { Button, Container } from "@mui/material";
 
 const Layout: React.FC = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userData = useSelector((state: RootState) => state.player.userData);
+  const navigate = useNavigate();
   const [newScoreDialogOpened, setNewScoreDialogOpened] = useState(false);
 
   useEffect(() => {
-    if (userData) {
-      if (userData.role === "admin") navigate("/admin");
-      if (userData.role === "player") navigate("/player");
-    } else {
-      navigate("/login");
-    }
-  }, [navigate, userData]);
+    navigate("/matchesTable");
+  }, [navigate]);
 
   /**
    * Handler for adding match result

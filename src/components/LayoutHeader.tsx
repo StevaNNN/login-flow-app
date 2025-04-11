@@ -16,6 +16,7 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 
 import Logo from "./logo.png";
+import { NavLink } from "react-router-dom";
 
 const LayoutHeader: React.FC = () => {
   const { darkMode } = useSelector((state: RootState) => state.appState);
@@ -48,6 +49,22 @@ const LayoutHeader: React.FC = () => {
         height={40}
         style={{ objectFit: "cover" }}
       />
+
+      <Box display={"flex"} gap={2}>
+        <NavLink to={"/matchesTable"}>
+          <Typography color="info">Results</Typography>
+        </NavLink>
+        {userData.role === "admin" && (
+          <NavLink to={"/admin"}>
+            <Typography color="info">Dashboard</Typography>
+          </NavLink>
+        )}
+        {userData.role === "player" && (
+          <NavLink to={"/player"}>
+            <Typography color="info">Player Info</Typography>
+          </NavLink>
+        )}
+      </Box>
 
       <Box display={"flex"} alignItems={"center"} gap={2}>
         <Typography>{userData?.fullName}</Typography>

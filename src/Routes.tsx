@@ -9,6 +9,7 @@ import ResetPasswordPage from "./feature/login/ResetPassPage";
 import Layout from "./components/Layout";
 import AdminPage from "./feature/admin/AdminPage";
 import PlayerPage from "./feature/player/PlayerPage";
+import MatchesTablePage from "./pages/MatchesTablePage";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute role="player">
             <PlayerPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/matchesTable",
+        element: (
+          <ProtectedRoute>
+            <MatchesTablePage />
           </ProtectedRoute>
         ),
       },

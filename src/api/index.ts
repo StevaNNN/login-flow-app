@@ -73,7 +73,7 @@ export const updateUserData = (data: USER) =>
 /////////////////////////////////////SHARED///////////////////////////////////////////////
 export const getSeasons = () => API.get("/seasons");
 export const addMatch = (data: MATCH_TYPE) => API.post("/addMatch", data);
-export const getMatches = () => API.post("/getMatches");
+export const getMatches = () => API.get("/getMatches");
 /////////////////////////////////////////////////////////////////////////////////////////
 
 export default API;
