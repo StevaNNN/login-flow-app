@@ -159,7 +159,7 @@ authRouter.post(
 );
 
 // Logout
-authRouter.post("/logout", (_req, res) => {
+authRouter.post("/logout", verifyToken, (_req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
 });
 

@@ -2,28 +2,14 @@ import express, { Request, Response } from "express";
 import User from "../models/User";
 import validator from "validator";
 import Season from "../models/Season";
+import { verifyToken } from "../middleware/auth";
 
 export const adminRouter = express.Router();
-
-// Get all users
-adminRouter.get(
-  "/users",
-  async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const users = await User.find().select("-password");
-      res.json(users);
-    } catch (err) {
-      if (err instanceof Error)
-        res
-          .status(500)
-          .json({ error: `Internal Server Error: ${err.message}` });
-    }
-  }
-);
 
 // Delete user
 adminRouter.post(
   "/deleteUser",
+  verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
@@ -49,6 +35,7 @@ adminRouter.post(
 // Add new season
 adminRouter.post(
   "/addSeason",
+  verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { seasonId, seasonName, seasonParticipants, seasonGroups } =
@@ -78,6 +65,7 @@ adminRouter.post(
 // Edit season
 adminRouter.put(
   "/editSeason",
+  verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { seasonId, seasonName, seasonParticipants, seasonGroups } =
@@ -111,6 +99,7 @@ adminRouter.put(
 // Delete season
 adminRouter.delete(
   "/deleteSeason",
+  verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { seasonId } = req.query;

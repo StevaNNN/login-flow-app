@@ -3,6 +3,16 @@ import { getUser, logoutUser } from "../../api";
 import { AuthContext } from "./AuthContext";
 import { useDispatch } from "react-redux";
 import { initialState, setUserData } from "../../redux/slices/playerSlice";
+import { useQuery } from "@tanstack/react-query";
+import { USER } from "../../Types";
+
+const fetchUser = async (): Promise<USER> => {
+  const { data, status } = await getUser();
+  if (status !== 200) {
+    throw new Error("Failed to init data");
+  }
+  return data;
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(() => {
@@ -10,21 +20,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return storedLoggedIn ? JSON.parse(storedLoggedIn) : false;
   });
   const dispatch = useDispatch();
+  const {
+    data: userData,
+    isError,
+    isSuccess,
+  } = useQuery<USER>({
+    queryKey: ["userData"],
+    queryFn: fetchUser,
+  });
 
   useEffect(() => {
-    try {
-      const fetchUser = async () => {
-        const { data } = await getUser();
-        setLoggedIn(true);
-        dispatch(setUserData(data));
-      };
-      if (loggedIn) fetchUser();
-    } catch (err) {
-      if (err instanceof Error) console.log(err.message);
+    setLoggedIn(true);
+    if (isSuccess) dispatch(setUserData(userData));
+    if (isError) {
       localStorage.removeItem("loggedIn");
       setLoggedIn(false);
     }
-  }, [dispatch, loggedIn]);
+  }, [dispatch, isError, isSuccess, loggedIn, userData]);
 
   const logout = useCallback(() => {
     setLoggedIn(false);
@@ -59,14 +71,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [logout]);
 
-  const login = async () => {
-    setLoggedIn(true);
-    try {
-      const { data } = await getUser();
-      dispatch(setUserData(data));
+  const login = () => {
+    if (isSuccess) {
+      setLoggedIn(true);
+      dispatch(setUserData(userData));
       localStorage.setItem("loggedIn", JSON.stringify(true));
-    } catch (err) {
-      if (err instanceof Error) console.log(err.message);
+    }
+    if (isError) {
+      setLoggedIn(false);
+      localStorage.removeItem("loggedIn");
     }
   };
 

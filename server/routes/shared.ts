@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import Match from "../models/Match";
 import Season from "../models/Season";
+import User from "../models/User";
 
 export const sharedRouter = express.Router();
 // Add match
@@ -72,11 +73,27 @@ sharedRouter.get(
 
 // Get all users
 sharedRouter.get(
-  "/getMatches",
+  "/matches",
   async (_req: Request, res: Response): Promise<void> => {
     try {
       const matches = await Match.find();
       res.json(matches);
+    } catch (err) {
+      if (err instanceof Error)
+        res
+          .status(500)
+          .json({ error: `Internal Server Error: ${err.message}` });
+    }
+  }
+);
+
+// Get all users
+sharedRouter.get(
+  "/users",
+  async (_req: Request, res: Response): Promise<void> => {
+    try {
+      const users = await User.find().select("-password");
+      res.json(users);
     } catch (err) {
       if (err instanceof Error)
         res

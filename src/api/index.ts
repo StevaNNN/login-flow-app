@@ -1,7 +1,5 @@
 import axios from "axios";
 import { MATCH_TYPE, SEASON, USER } from "../Types";
-// import { useContext } from "react";
-// import { AuthContext } from "../context/auth/AuthContext";
 
 const API = axios.create({
   baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
@@ -10,26 +8,18 @@ const API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    // const { setLoading } = useContext(AuthContext);
-    // setLoading(true);
     return config;
   },
   (error) => {
-    // const { setLoading } = useContext(AuthContext);
-    // setLoading(false);
     return Promise.reject(error);
   }
 );
 
 API.interceptors.response.use(
   (response) => {
-    // const { setLoading } = useContext(AuthContext);
-    // setLoading(false);
     return response;
   },
   (error) => {
-    // const { setLoading } = useContext(AuthContext);
-    // setLoading(false);
     return Promise.reject(error);
   }
 );
@@ -50,8 +40,6 @@ export const getUser = () => API.get(`/auth/me`, { withCredentials: true });
 ////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////ADMIN///////////////////////////////////////////////
-export const getUsers = () =>
-  API.get(`/admin/users`, { withCredentials: true });
 export const deleteUser = (email: string) =>
   API.post("/admin/deleteUser", { email });
 
@@ -71,9 +59,10 @@ export const updateUserData = (data: USER) =>
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////SHARED///////////////////////////////////////////////
+export const getUsers = () => API.get(`/users`);
 export const getSeasons = () => API.get("/seasons");
 export const addMatch = (data: MATCH_TYPE) => API.post("/addMatch", data);
-export const getMatches = () => API.get("/getMatches");
+export const getMatches = () => API.get("/matches");
 /////////////////////////////////////////////////////////////////////////////////////////
 
 export default API;

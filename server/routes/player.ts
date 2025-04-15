@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid"; // Import UUID for unique filenames
 import validator from "validator";
 import User from "../models/User";
+import { verifyToken } from "../middleware/auth";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ export const playerRouter = express.Router();
 // Upload user profile picture
 playerRouter.post(
   "/uploadPicture",
+  verifyToken,
   upload.single("image"),
   (req, res, next) => {
     (async () => {
@@ -57,6 +59,7 @@ playerRouter.post(
 // Upate user info
 playerRouter.post(
   "/updateUserInfo",
+  verifyToken,
   async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, userName, fullName, photo, _id } = req.body;
