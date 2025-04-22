@@ -5,11 +5,10 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=https://developers.google.com/oauthplayground
 GOOGLE_REFRESH_TOKEN=
 
-FRONTEND_URL=http://localhost:9001
+FRONTEND_URL=http://localhost:7777
 MONGO_URI=mongodb://localhost:27017/loginApp
 JWT_SECRET=your_jwt_secret
 PORT=9000
-
 
 CLOUDINARY_CLOUD_NAME
 CLOUDINARY_API_KEY
